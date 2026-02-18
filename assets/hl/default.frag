@@ -62,7 +62,7 @@ vec3 desaturate(vec3 color) {
 void main() {
 
     // Textures 
-    vec4 color_diffuse = vec4(1.0, 0.0, 0.0, 1.0);
+    vec4 color_diffuse = vec4(1.0);
     vec4 color_diffuse2 = vec4(0.0);
 
     if (u_usesTexture[0] == 1)
