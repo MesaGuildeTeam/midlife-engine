@@ -1,0 +1,39 @@
+{
+  "dependencies": [
+    {
+      "name": "dox",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "format",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "formatter",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "hlsdl",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "instrument",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "utest",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "vector-math",
+      "type": "haxelib",
+      "version": null
+    }
+  ]
+}

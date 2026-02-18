@@ -1,0 +1,9 @@
+{
+    "name": "midlife-engine",
+    "version": "0.1.0",
+    "classPath": "src/",
+    "dependencies": {
+        "vector-math": "3.0.1",
+        "hlsdl": "1.15.0"
+    }
+}

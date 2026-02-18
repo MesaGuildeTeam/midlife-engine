@@ -1,0 +1,13 @@
+--xml tmp/docs.xml
+-D doc-gen
+#--interp
+-hl docs.hl
+
+-L vector-math
+-L hlsdl
+
+-p src
+
+recharge.midlife.base
+
+--cmd haxelib run dox -i ./tmp -o ./docs/dox --title "Midlife Engine"

@@ -1,0 +1,5 @@
+.vscode
+.haxelib
+docs/dox
+tmp
+bin

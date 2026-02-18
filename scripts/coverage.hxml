@@ -1,0 +1,22 @@
+# Import engine dependencies
+-L vector-math
+-L hlsdl
+
+# prepare for unit testing
+-L utest
+
+# Prevent use of Lime or any media libraries in test mode
+-D carpengine-testmode
+-D carpengine-coverage
+
+# Generate coverage reports
+-L instrument
+--macro instrument.Instrumentation.coverage(['recharge.midlife.base'], ['src'], [])
+#-D coverage-lcov-reporter=tmp/lcov.info
+-D coverage-console-file-summary-reporter
+
+# Run the tests
+--interp
+-dce full
+-p src
+-m Tests

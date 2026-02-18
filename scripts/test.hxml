@@ -1,0 +1,14 @@
+# Import engine dependencies
+-L vector-math
+
+# prepare for unit testing
+-L utest
+
+# Prevent use of Lime or any media libraries in test mode
+-D carpengine-testmode
+
+# Run the tests
+--interp
+-dce full
+-p src
+-m Tests
