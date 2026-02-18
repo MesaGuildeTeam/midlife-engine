@@ -14,6 +14,8 @@ class PhysicsDemo extends World {
   static var registry = recharge.midlife.base.NodeFactory.register(PhysicsDemo);
 
   var Ball:GameObject;
+  var Ball2:GameObject;
+
   var Surface:GameObject;
   var Surface2:GameObject;
   var lightId:Int;
@@ -24,7 +26,9 @@ class PhysicsDemo extends World {
   public function new(name:String, ?params:Dynamic) {
     super(name, params);
     gravity = vec3(0, -9.81, 0);
-    Ball = new GameObject("Ball", {position: vec3(0.25, 5, 10)});
+    Ball = new GameObject("Ball", {position: vec3(0.25, 6, 10)});
+    Ball2 = new GameObject("Ball", {position: vec3(0, 3, 10)});
+
     Surface = new GameObject("Surface",
       {position: vec3(0, 0, 10), scale: vec3(1), isStatic: true});
 
@@ -37,9 +41,11 @@ class PhysicsDemo extends World {
 
     Ball.shape = new SphereSDF(0.5);
     addChild(Ball);
+    Ball2.shape = new SphereSDF(0.5);
+    addChild(Ball2);
+
     Surface.shape = new SphereSDF(0.5);
     addChild(Surface);
-
     Surface2.shape = new SphereSDF(0.5);
     addChild(Surface2);
   }
@@ -52,7 +58,8 @@ class PhysicsDemo extends World {
     var renderer:Renderer = Game.getInstance().getRenderer();
     renderer.setBackgroundColor(vec3(0.0, 0.1, 0.0));
 
-    renderer.queueMesh(BallMesh, Ball.position + vec3(0, 0, 0), Ball.scale, Ball.rotation);
+    renderer.queueMesh(BallMesh, Ball.position + vec3(0, 0, 0), Ball.scale, Ball.rotation); 
+    renderer.queueMesh(BallMesh, Ball2.position + vec3(0, 0, 0), Ball2.scale, Ball2.rotation);
     renderer.queueMesh(BallMesh, Surface.position + vec3(0, 0, 0), Surface.scale, Surface.rotation);
     renderer.queueMesh(BallMesh, Surface2.position + vec3(0, 0, 0), Surface2.scale, Surface2.rotation);
 

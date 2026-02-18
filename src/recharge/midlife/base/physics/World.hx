@@ -66,6 +66,9 @@ class World extends Node {
         } else {
           childA.velocity = ((childA.mass - elasticity * childB.mass) * prevVelA + (1 + elasticity) * childB.mass * childB.velocity) / (childA.mass + childB.mass);
           childB.velocity = ((childB.mass - elasticity * childA.mass) * childB.velocity + (1 + elasticity) * childA.mass * prevVelA) / (childA.mass + childB.mass);
+
+          childA.velocity = length(childA.velocity) * childB.shape.getNormal((childB.position - childA.position));
+          childB.velocity = length(childB.velocity) * childB.shape.getNormal((childA.position - childB.position));
         }
 
         // Minor separation to avoid seeping through
