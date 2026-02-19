@@ -5,7 +5,6 @@ attribute vec2 a_UV;
 attribute vec3 a_Normal;
 
 uniform mat4 u_Transform;
-uniform vec2 u_Ambient;
 
 varying vec3 v_Position;
 varying vec2 v_UV;
