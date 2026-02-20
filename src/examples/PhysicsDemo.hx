@@ -19,7 +19,8 @@ class PhysicsDemo extends World {
   var Surface:GameObject;
   var Surface2:GameObject;
   var lightId:Int;
-  static var BallMesh: Mesh = new MarchingCubeMesh(new SphereSDF(0.5));
+
+  static var BallMesh:Mesh = new MarchingCubeMesh(new SphereSDF(0.5));
 
   static var cube:Mesh = new Cube();
 
@@ -53,15 +54,19 @@ class PhysicsDemo extends World {
   public override function draw() {
     lightId = Game.getInstance()
       .getScene()
-      .lights.setLight(vec4(0.5, 1, -2, 1), vec4(1, 1, 1, 3), lightId);
+      .lights.setLight(vec4(0, 1, -1, 0), vec4(1, 1, 1, 1), lightId);
 
     var renderer:Renderer = Game.getInstance().getRenderer();
     renderer.setBackgroundColor(vec3(0.0, 0.1, 0.0));
 
-    renderer.queueMesh(BallMesh, Ball.position + vec3(0, 0, 0), Ball.scale, Ball.rotation); 
-    renderer.queueMesh(BallMesh, Ball2.position + vec3(0, 0, 0), Ball2.scale, Ball2.rotation);
-    renderer.queueMesh(BallMesh, Surface.position + vec3(0, 0, 0), Surface.scale, Surface.rotation);
-    renderer.queueMesh(BallMesh, Surface2.position + vec3(0, 0, 0), Surface2.scale, Surface2.rotation);
+    renderer.queueMesh(BallMesh, Ball.position + vec3(0, 0, 0), Ball.scale,
+      Ball.rotation);
+    renderer.queueMesh(BallMesh, Ball2.position + vec3(0, 0, 0), Ball2.scale,
+      Ball2.rotation);
+    renderer.queueMesh(BallMesh, Surface.position + vec3(0, 0, 0),
+      Surface.scale, Surface.rotation);
+    renderer.queueMesh(BallMesh, Surface2.position + vec3(0, 0, 0),
+      Surface2.scale, Surface2.rotation);
 
     super.draw();
   }

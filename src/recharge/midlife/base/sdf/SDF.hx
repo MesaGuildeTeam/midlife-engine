@@ -66,7 +66,7 @@ class SphereSDF extends SDFAbstract {
   }
 
   override public function getNormal(point:Vec3):Vec3 {
-    return vec3(-(point - _pos)/length(point - _pos));
+    return vec3(-(point - _pos) / length(point - _pos));
   }
 
   override public function getUV(point:Vec3):Vec2 {
@@ -220,7 +220,7 @@ class SDFTransform extends SDFAbstract {
     return _shape.computeDistance(newPoint.xyz);
   }
 
-  // override public function getNormal(point:Vec3) { 
+  // override public function getNormal(point:Vec3) {
   //   var newPoint:Vec4 = _transform.inverse() * vec4(point, 1.0);
   //   return _shape.getNormal(newPoint.xyz);
   // }

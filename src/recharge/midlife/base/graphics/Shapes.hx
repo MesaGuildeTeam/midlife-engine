@@ -9,11 +9,12 @@ package recharge.midlife.base.graphics;
 import recharge.midlife.base.graphics.Mesh;
 
 class Plane extends Mesh {
-  public function new() {
-    addQuad(new Vertex(vec3(-1, -1, 0) / 2, vec2(0, 1)),
-      new Vertex(vec3(1, -1, 0) / 2, vec2(1, 1)),
-      new Vertex(vec3(1, 1, 0) / 2, vec2(0, 0)),
-      new Vertex(vec3(-1, 1, 0) / 2, vec2(1, 0)));
+  public function new(?offset:Vec3) {
+    offset = offset == null ? vec3(0, 0, 0) : offset;
+    addQuad(new Vertex(vec3(-0.5, -0.5, 0) + offset, vec2(0, 1)),
+      new Vertex(vec3(0.5, -0.5, 0) + offset, vec2(1, 1)),
+      new Vertex(vec3(0.5, 0.5, 0) + offset, vec2(0, 0)),
+      new Vertex(vec3(-0.5, 0.5, 0) + offset, vec2(1, 0)));
   }
 }
 

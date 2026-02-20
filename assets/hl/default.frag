@@ -30,23 +30,33 @@ uniform vec4 u_DiffuseColor;
 vec3 computeBRDF(vec3 lightPos, vec4 color) {
     float distance = length(lightPos);
     float lightOnObj = color.w / (distance * distance);
-    vec3 halfway = normalize(vec3(0.0, 0.0, -1.0) + lightPos); 
+    vec3 halfway = normalize(vec3(0.0, 0.0, 1.0) + lightPos); 
     float kd = 1.0;
-    float ks = 2.0;
+    float ks = 0.0;
+    float lh = 0.5;
+
+    // Lambert
+    float lambert = dot(normalize(v_Normal), normalize(lightPos));
+
+    // Lambertian Wrap. Comment first below if regular lambert is preferred 
+    lambert = mix((lambert + lh) / (1.0 + lh), lambert, clamp(ks, 0.0, 1.0));
+    lambert = max(lambert, 0.0);
 
     vec3 diffuse = lightOnObj 
-        * max(dot(normalize(v_Normal), normalize(lightPos)), 0.0) * color.xyz;
+        * lambert * color.xyz;
+
+    // Specular with fresnel
     vec3 specular = ks * lightOnObj 
-        * max(0.0, pow(dot(halfway, normalize(v_Normal)), 10.0 * ks)) * vec3(1.0); 
+        * max(0.0, pow(dot(halfway, normalize(v_Normal)), 20.0)) * color.xyz; 
     vec3 fresnel = ks * lightOnObj
-        * pow(1.0 - max(0.0, dot(normalize(v_Normal), vec3(0.0, 0.0, 1.0))), 3.0) * vec3(1.0);
+        * pow(1.0 - max(0.0, dot(normalize(v_Normal), vec3(0.0, 0.0, 1.0))), 3.0) * color.xyz;
 
     // Option 1: Just Diffuse and Specular
     //return kd * diffuse + specular;
     // Option 2: Replace Specular with fresnel
-    //return (kd + 2.0 * fresnel) * diffuse;
+    //return kd * diffuse + (1.0 * fresnel * length(diffuse));
     // Option 3: Combine Fresnel with Diffuse
-    return (kd + 3.0 * fresnel) * diffuse + specular;
+    return kd * diffuse + specular + (3.0 * fresnel * length(diffuse));
 }
 
 /*

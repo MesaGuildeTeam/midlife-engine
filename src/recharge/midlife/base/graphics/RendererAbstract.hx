@@ -25,7 +25,7 @@ class RenderInstruction {
   public var transformation:Mat4 = mat4(1.0);
   public var shader:Shader;
   public var textures:Map<TextureSlot, Null<Texture>>;
-  public var diffuseColor: Vec4 = vec4(1.0);
+  public var diffuseColor:Vec4 = vec4(1.0);
   public var shininess:Float = 0.0;
   public var shinePower:Float = 5.0;
 

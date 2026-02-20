@@ -30,7 +30,7 @@ class HelloWorld extends Node {
   public override function draw():Void {
     lightId = Game.getInstance()
       .getScene()
-      .lights.setLight(vec4(0.5, 1, -2, 0), vec4(1, 1, 1, 3), lightId);
+      .lights.setLight(vec4(0, 1, -1, 0), vec4(1, 1, 1, 1), lightId);
 
     // lightId2 = Game.getInstance()
     //   .getScene()

@@ -1,10 +1,11 @@
 --xml tmp/docs.xml
 -D doc-gen
-#--interp
--hl docs.hl
+--interp
+#-hl docs.hl
 
 -L vector-math
 -L hlsdl
+-L format
 
 -p src
 

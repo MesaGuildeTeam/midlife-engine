@@ -31,13 +31,17 @@ Offer compatibility with the RetroLib API but build natively to
   - [ ] Specular
   - [ ] Normal
 - [x] There is a controllable light and an option to add point lights if needed
+- [ ] The rendering pipeline knows how to differentiate between the following
+  - [x] Environment Models
+  - [ ] Environment Lines
+  - [x] UI Rendering
 
 > To-Do: Consult with a 3D Artist what the standard maps are for a model and how color manipulation is usually used in development
 
 ### Window
 
-- [ ] Although resizable, a standard game viewport and window is 640x480px
-- [x] Assuming no rotation or camera reconfiguration, if the object has a distance of 10 each unit should be 1 pixel
+- [x] Although resizable, a standard game viewport and window is 640x480px
+- [x] Assuming no rotation or camera reconfiguration, if the object has a distance of 10 each unit should be 1 pixel at standard window size
 - [ ] Graphics will scale as the window resizes keeping the ratio to the best of its ability
 - [ ] UI should not be required to scale
 
