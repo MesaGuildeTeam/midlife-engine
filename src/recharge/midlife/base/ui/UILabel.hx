@@ -26,7 +26,7 @@ class UILabel extends UIElement {
 
   public function setText(text:String):Void {
     _text = text;
-    dimensions = vec2(text.length * 8, 8);
+    _dimensions = vec2(text.length, 1);
     _mesh = new TextMesh(text);
   }
 
@@ -35,8 +35,7 @@ class UILabel extends UIElement {
     Game.getInstance().getRenderer().pushTexture(_fontTexture);
     Game.getInstance()
       .getRenderer()
-      .queueMesh(_mesh,
-        vec3((getPosition() + dimensions / 2) * vec2(1, -1), 0), vec3(8, 8, 1));
+      .queueMesh(_mesh, vec3(getPosition() * vec2(1, -1), 0), vec3(1, 1, 1));
 
     super.draw();
   }

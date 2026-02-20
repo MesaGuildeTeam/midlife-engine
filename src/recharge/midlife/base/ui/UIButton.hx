@@ -1,7 +1,5 @@
 package recharge.midlife.base.ui;
 
-import haxe.io.Input;
-
 import recharge.midlife.base.ui.UILabel;
 import recharge.midlife.base.input.InputManager;
 import recharge.midlife.base.Utils;
@@ -24,7 +22,12 @@ class UIButton extends UIElement {
   public override function init():Void {
     super.init();
     addChild(textObject);
-    textObject.setAnchor(TOP_LEFT);
+
+    // Ideally we would want to just set anchor to center, but the box's center
+    // is not the text center. See UIElement.uiPlane and graphics.Shapes.Plane for details.
+    // TODO: MAKE THIS WORK PROPERLY
+    textObject.setOffset(vec2(2, -2));
+    // textObject.setAnchor(CENTER);
   }
 
   var _callback:Void->Void;
@@ -42,7 +45,7 @@ class UIButton extends UIElement {
   }
 
   public function setText(text:String):Void {
-    dimensions = vec2(text.length * 8 + 16, 24);
+    _dimensions = vec2(text.length + 0.5, 1.5);
     textObject.setText(text);
   }
 
@@ -50,8 +53,8 @@ class UIButton extends UIElement {
     Game.getInstance().getRenderer().pushShader(UIElement.uiShader);
     Game.getInstance()
       .getRenderer()
-      .queueMesh(UIElement.uiPlane, vec3((getPosition()) * vec2(1, -1), -0.1),
-        vec3(dimensions, 1));
+      .queueMesh(UIElement.uiPlane, vec3(getPosition() * vec2(1, -1), 0.1),
+        vec3(_dimensions, 1), vec3(0));
 
     super.draw();
   }
