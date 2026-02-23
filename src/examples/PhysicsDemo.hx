@@ -6,7 +6,7 @@ import recharge.midlife.base.Game;
 import recharge.midlife.base.graphics.Renderer;
 import recharge.midlife.base.graphics.Shapes;
 import recharge.midlife.base.graphics.Mesh;
-import recharge.midlife.base.graphics.MarchingCubeMesh;
+import recharge.midlife.base.graphics.SurfaceNet;
 import recharge.midlife.base.sdf.SDF;
 
 class PhysicsDemo extends World {
@@ -20,7 +20,7 @@ class PhysicsDemo extends World {
   var Surface2:GameObject;
   var lightId:Int;
 
-  static var BallMesh:Mesh = new MarchingCubeMesh(new SphereSDF(0.5));
+  static var BallMesh:Mesh = new SurfaceNet(new SphereSDF(1));
 
   static var cube:Mesh = new Cube();
 

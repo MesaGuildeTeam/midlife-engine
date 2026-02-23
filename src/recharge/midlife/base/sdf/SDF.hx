@@ -20,6 +20,16 @@ class SDFAbstract {
   }
 
   /**
+   * Takes a point 
+   */
+  inline public function getClosestPoint(point:Vec3):Vec3 {
+    var dist = computeDistance(point);
+    var normal = getNormal(point);
+
+    return point + normal * dist;
+  }
+
+  /**
    * Computes the normal vector of the SDF
    * 
    * If there is no pre-defined gradient function for the SDF type, the normal is approximated
@@ -60,9 +70,9 @@ class SphereSDF extends SDFAbstract {
   var _pos:Vec3;
   var _radius:Float;
 
-  public function new(rad:Float, ?pos:Vec3) {
+  public function new(diameter:Float, ?pos:Vec3) {
     _pos = pos != null ? pos : vec3(0, 0, 0);
-    _radius = rad;
+    _radius = diameter / 2;
   }
 
   override public function getNormal(point:Vec3):Vec3 {
