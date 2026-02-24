@@ -9,6 +9,8 @@ import sdl.Window;
 import sdl.GL;
 import sdl.Event;
 
+import haxe.Timer;
+
 class GameHL extends recharge.midlife.base.GameAbstract {
   static var InputParamMap:Map<Int, Float> = new Map();
 
@@ -57,16 +59,17 @@ class GameHL extends recharge.midlife.base.GameAbstract {
       return InputParamMap.get(32); 
     }));
 
+    var currentTime = Timer.stamp();
     // Run Game Loop
     var running = true;
     while (running) {
+      var previousTime = currentTime;
       Sdl.processEvents((event) -> {
         if (event.type == EventType.Quit) {
           running = false;
         }
 
         if (event.type == EventType.KeyDown) {
-          trace(event.keyCode);
           processKeyboard(1.0, event.keyCode);
         }
 
@@ -80,7 +83,9 @@ class GameHL extends recharge.midlife.base.GameAbstract {
       GL.viewport(0, 0, window.width, window.height);
 
       // Update and render the current scene
-      this.updateScene(1 / 60);
+      currentTime = Timer.stamp();
+      var dt = (currentTime - previousTime) * 2;
+      this.updateScene(dt);
 
       GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
       this.drawScene();
