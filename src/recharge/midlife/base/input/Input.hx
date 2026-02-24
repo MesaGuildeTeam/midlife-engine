@@ -55,4 +55,10 @@ class Input {
   function get_strength():Float {
     return m_isDown;
   }
+
+  public function flush():Void {
+    m_isPressed = false;
+    m_isReleased = false;
+    strength = 0.0;
+  }
 }

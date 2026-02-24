@@ -65,8 +65,50 @@ class UIButton extends UIElement {
     super.draw();
   }
 
+  function findNextHoverable(direction:Vec2):UIButton {
+    var neighbors = parent.getChildren();
+
+    // 1 because the neighbor could be itself too
+    if (neighbors.length == 1) return null;
+
+    var bestNeighbor:Null<UIButton> = null;
+    var bestDot = Math.POSITIVE_INFINITY;
+    var bestAngle = Math.POSITIVE_INFINITY;
+
+    for (neighbor in neighbors) {
+      if (neighbor == this || !(Std.is(neighbor, UIButton))) continue;
+      var castedNeighbor:UIButton = cast(neighbor, UIButton);
+
+      var toNeighbor:Vec2 = castedNeighbor.getPosition() - getPosition();
+      var dot = Math.abs(toNeighbor.dot(direction));
+      var angle = Math.atan2(toNeighbor.y - direction.y, toNeighbor.x - direction.x);
+
+      if (bestAngle == angle && bestDot < dot) continue;
+      bestDot = dot;
+      bestAngle = angle;
+      bestNeighbor = castedNeighbor;
+    }
+
+    trace('Best Neighbor: ' + (bestNeighbor != null ? bestNeighbor.name : 'None') + ' Angle: ' + bestAngle + ' Dot: ' + bestDot);
+    return bestNeighbor;
+  }
+
   public override function update(dt:Float):Void {
     super.update(dt);
+
+    // Spatial Navigation using D-Pad
+    var xAxis = InputManager.getInstance().getAxisImpulse("DPadX");
+    var yAxis = InputManager.getInstance().getAxisImpulse("DPadY");
+
+    if ((xAxis != 0 || yAxis != 0) && _hovered) {
+      var direction = vec2(xAxis, yAxis);
+      var nextElement = findNextHoverable(direction);
+      if (nextElement != null) {
+        _hovered = false;
+        nextElement.focus();
+        InputManager.getInstance().flush();
+      }
+    }
 
     var selected = InputManager.getInstance().getInput("ButtonA").isPressed();
 

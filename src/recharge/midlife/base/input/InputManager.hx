@@ -55,6 +55,35 @@ class InputManager {
     return 0.0;
   }
 
+  public function getAxisImpulse(name:String):Float {
+    if (m_axisList.exists(name)) {
+      var positiveImpulse = m_axisList[name][0].isPressed() ? 1.0 : 0.0;
+      var negativeImpulse = m_axisList[name][1].isPressed() ? 1.0 : 0.0;
+
+      return positiveImpulse - negativeImpulse;
+    }
+      
+
+    trace("WARNING: Input " + name + " not found");
+    return 0.0;
+  }
+
+  /**
+   * Used in cases where you want to reset the state of all inputs.
+   * 
+   * This is currently used with the UI system to reset the state of inputs after processing them for UI navigation and interaction.
+   */
+  public function flush():Void {
+    for (i in m_axisList.keys()) {
+      m_axisList[i][0].flush();
+
+      if (m_axisList[i][1] == null)
+        continue;
+      m_axisList[i][1].flush();
+    }
+    m_keyboardQueue = new Array();
+  }
+
   public function update():Void {
     for (i in m_axisList.keys()) {
       m_axisList[i][0].update();
