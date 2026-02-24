@@ -80,16 +80,16 @@ class UIButton extends UIElement {
       var castedNeighbor:UIButton = cast(neighbor, UIButton);
 
       var toNeighbor:Vec2 = castedNeighbor.getPosition() - getPosition();
-      var dot = Math.abs(toNeighbor.dot(direction));
-      var angle = Math.atan2(toNeighbor.y - direction.y, toNeighbor.x - direction.x);
+      var dot = toNeighbor.length();
+      var angle = Math.atan2(toNeighbor.y, toNeighbor.x) - Math.atan2(direction.y, direction.x);
 
-      if (bestAngle == angle && bestDot < dot) continue;
+      if (Math.abs(angle) >= Math.PI / 2) continue;
+      if (bestAngle < angle && bestDot < dot) continue;
       bestDot = dot;
       bestAngle = angle;
       bestNeighbor = castedNeighbor;
     }
 
-    trace('Best Neighbor: ' + (bestNeighbor != null ? bestNeighbor.name : 'None') + ' Angle: ' + bestAngle + ' Dot: ' + bestDot);
     return bestNeighbor;
   }
 
@@ -98,7 +98,7 @@ class UIButton extends UIElement {
 
     // Spatial Navigation using D-Pad
     var xAxis = InputManager.getInstance().getAxisImpulse("DPadX");
-    var yAxis = InputManager.getInstance().getAxisImpulse("DPadY");
+    var yAxis = -InputManager.getInstance().getAxisImpulse("DPadY");
 
     if ((xAxis != 0 || yAxis != 0) && _hovered) {
       var direction = vec2(xAxis, yAxis);
