@@ -15,8 +15,8 @@ class HelloWorld extends Node {
   static var registry = NodeFactory.register(HelloWorld);
 
   var time:Float = 0.0;
-  var mesh:Mesh = new SurfaceNet(new SDFSubtraction([new SphereSDF(1), new SphereSDF(1,
-    vec3(0.5))]));
+  var mesh:Mesh = new SurfaceNet(new SDFSubtraction([new SphereSDF(2), new SphereSDF(2,
+    vec3(1.0))]));
   // var mesh:Mesh = new Cube();
   var texture:Texture = new Texture("assets/placeholder.png");
 
