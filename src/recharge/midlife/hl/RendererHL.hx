@@ -34,6 +34,8 @@ class RendererHL extends RendererAbstract {
     GL.enable(GL.CULL_FACE);
     GL.cullFace(GL.BACK);
 
+    //GL.polygonMode(GL.FRONT_AND_BACK, GL.LINE);
+
     // Prepare buffers
     _vbo = GL.createBuffer();
     _vao = GL.createVertexArray();
@@ -144,6 +146,13 @@ class RendererHL extends RendererAbstract {
     } else {
       if (utUniform != null)
         GL.uniform1i(utUniform, 0);
+    }
+
+    var udcUniform = GL.getUniformLocation(currentShader, "u_DiffuseColor");
+    if (udcUniform != null) {
+      var c = instruction.diffuseColor != null ? instruction.diffuseColor : vec4(1, 1, 1, 1);
+      var v = Float32Array.fromArray([c.x, c.y, c.z, c.w]).getData();
+      GL.uniform4fv(udcUniform, Bytes.fromBytes(v.bytes), 0, 1);
     }
 
     // Bind and draw mesh with shader

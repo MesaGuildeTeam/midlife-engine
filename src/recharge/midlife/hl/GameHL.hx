@@ -54,7 +54,7 @@ class GameHL extends recharge.midlife.base.GameAbstract {
     }));
 
     InputManager.getInstance().setInput("ButtonA", new Input(() -> {
-      return 0.0;
+      return InputParamMap.get(32); 
     }));
 
     // Run Game Loop

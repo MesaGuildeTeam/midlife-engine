@@ -108,6 +108,10 @@ class RendererAbstract {
     _constructingInstruction.textures.set(slot, texture);
   }
 
+  public function pushDiffuseColor(color: Vec4) {
+    _constructingInstruction.diffuseColor = color;
+  }
+
   /**
    * simplified the queueing of a single sprite at a given position with a given rotation
    * 

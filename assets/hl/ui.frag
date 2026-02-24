@@ -25,4 +25,10 @@ void main() {
     
     if (u_usesTexture[0] == 1)
         gl_FragColor = texture2D(u_Diffuse, v_UV);
+    
+    gl_FragColor *= u_DiffuseColor;
+
+    if (gl_FragColor.a == 0.0) {
+        discard;
+    }
 }

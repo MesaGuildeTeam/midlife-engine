@@ -10,6 +10,9 @@ class UIButton extends UIElement {
 
   var _hovered:Bool = false;
 
+  var _colorNormal:Vec4 = vec4(0.5, 0.5, 0.5, 1);
+  var _colorHover:Vec4 = vec4(0.8, 0.8, 0.8, 1);
+
   public var textObject:UILabel;
 
   public function new(name:String = "UIButton", ?params:Dynamic) {
@@ -31,9 +34,7 @@ class UIButton extends UIElement {
   }
 
   var _callback:Void->Void;
-
   public var callback(never, set):Void->Void;
-
   function set_callback(callback:Void->Void):Void->Void {
     _callback = callback;
     return callback;
@@ -49,8 +50,13 @@ class UIButton extends UIElement {
     textObject.setText(text);
   }
 
+  public function focus():Void {
+    _hovered = true;
+  }
+
   public override function draw() {
     Game.getInstance().getRenderer().pushShader(UIElement.uiShader);
+    Game.getInstance().getRenderer().pushDiffuseColor(_hovered ? _colorHover : _colorNormal);
     Game.getInstance()
       .getRenderer()
       .queueMesh(UIElement.uiPlane, vec3(getPosition() * vec2(1, -1), 0.1),

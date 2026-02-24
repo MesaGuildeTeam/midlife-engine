@@ -35,7 +35,22 @@ class UIExample extends Node {
       "UIButton0", {
       text: "Click Me"
     });
+    button.callback = () -> {
+      trace("Button Clicked!");
+    }
+    button.focus();
     button.setAnchor(TOP_RIGHT);
     base.addChild(button);
+
+    var button2:UIButton = NodeFactory.create("recharge.midlife.base.ui.UIButton",
+      "UIButton1", {
+      text: "Click Me"
+    });
+    button2.callback = () -> {
+      trace("Button #2 Clicked!");
+    }
+    button2.setAnchor(TOP_RIGHT);
+    button2.setOffset(vec2(0, 16));
+    base.addChild(button2);
   }
 }

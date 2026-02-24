@@ -1,3 +1,17 @@
+/**
+ * The default fragment shader for rendering objects in a scene.
+ *
+ * Inspired by the Blinn-Phong reflection model, this shader uses a lambertian
+ * wrap to simulate rougher surfaces, and a fresnel term to add more depth to
+ * the specular highlights.
+ *
+ * The shader currently supports up to 32 point lights. Each light position is
+ * a vec4 where w is used to determine if the light is directional (w = 0) or
+ * point (w = 1). The light color uses the alpha channel as the strength of the light.
+ *
+ * @author Roberto Selles
+ */
+
 //precision mediump float;
 
 // Varying Variables from Mesh
@@ -24,7 +38,6 @@ uniform vec4 u_DiffuseColor;
  * Computes the light distribution relative to the object
  *
  * @param lightPos the position of the light relative to the object
- * @param strength the light strength
  * @param color the RGB of the light
  */
 vec3 computeBRDF(vec3 lightPos, vec4 color) {
@@ -32,7 +45,7 @@ vec3 computeBRDF(vec3 lightPos, vec4 color) {
     float lightOnObj = color.w / (distance * distance);
     vec3 halfway = normalize(vec3(0.0, 0.0, 1.0) + lightPos); 
     float kd = 1.0;
-    float ks = 0.0;
+    float ks = 1.0;
     float lh = 0.5;
 
     // Lambert
@@ -77,6 +90,8 @@ void main() {
 
     if (u_usesTexture[0] == 1)
         color_diffuse = texture2D(u_Diffuse, v_UV);
+
+    color_diffuse *= u_DiffuseColor;
 
     // colorMix is the combination of the base diffuse, but the second diffuse layer is mapped on top
     vec4 colorMix = mix(color_diffuse, color_diffuse2, color_diffuse2.a);
