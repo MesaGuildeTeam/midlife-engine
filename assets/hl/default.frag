@@ -35,19 +35,23 @@ uniform int u_usesTexture[2];
 
 uniform vec4 u_DiffuseColor;
 
+#define kd 1.0
+#define ks 1.0
+#define lh 0.5
+
 /**
- * Computes the light distribution relative to the object
+ * Computes the diffuse lighting for a given light source
+ *
+ * If there is a specular component, we will add the fresnel term during this
+ * step to take advantage of the diffuse lighting being calculated. 
  *
  * @param lightPos the position of the light relative to the object
  * @param color the RGB of the light
  */
-vec3 computeBRDF(vec3 lightPos, vec4 color) {
+vec3 computeDiffuse(vec3 lightPos, vec4 color, vec3 surface) {
     float distance = length(lightPos);
     float lightOnObj = color.w / (distance * distance);
     vec3 halfway = normalize(v_CameraDir + lightPos); 
-    float kd = 1.0;
-    float ks = 1.0;
-    float lh = 0.5;
 
     // Lambert
     float lambert = dot(normalize(v_Normal), normalize(lightPos));
@@ -58,20 +62,26 @@ vec3 computeBRDF(vec3 lightPos, vec4 color) {
 
     vec3 diffuse = lightOnObj 
         * lambert * color.xyz;
+    vec3 fresnel = ks * lightOnObj
+        * pow(1.0 - max(0.0, dot(normalize(v_Normal), v_CameraDir)), 5.0) * color.xyz;
+
+    vec3 result = kd * diffuse * surface;
+    // Enable Fresnel
+    result += (fresnel * length(diffuse + u_Ambient.xyz));
+    
+    return result;
+}
+
+vec3 computeSpecular(vec3 lightPos, vec4 color) {
+    float distance = length(lightPos);
+    float lightOnObj = color.w / (distance * distance);
+    vec3 halfway = normalize(v_CameraDir + lightPos); 
 
     // Specular with fresnel
     vec3 specular = ks * lightOnObj 
-        * max(0.0, pow(dot(halfway, normalize(v_Normal)), 20.0)) * color.xyz; 
-    vec3 fresnel = ks * lightOnObj
-        * pow(1.0 - max(0.0, dot(normalize(v_Normal), v_CameraDir)), 3.0) * color.xyz;
+        * max(0.0, pow(dot(halfway, normalize(v_Normal)), 100.0)) * color.xyz;
 
-    vec3 result = kd * diffuse;
-    // Enable Specular
-    result += specular;
-    // Enable Fresnel
-    result += (3.0 * fresnel * length(diffuse + u_Ambient.xyz));
-    
-    return result;
+    return specular;
 }
 
 /*
@@ -87,7 +97,7 @@ vec3 desaturate(vec3 color) {
 void main() {
 
     // Textures 
-    vec4 color_diffuse = vec4(1.0);
+    vec4 color_diffuse = vec4(1.0, 1.0, 1.0, 1.0);
     vec4 color_diffuse2 = vec4(0.0);
 
     if (u_usesTexture[0] == 1)
@@ -103,16 +113,16 @@ void main() {
     // Point Lights 
     vec3 lighting = vec3(0.0);
     for (int i = 0; i < u_LightCount; i++) {
+        vec3 lightPos = -u_LightPos[i].xyz;
         if (u_LightPos[i].w >= 1.0) {
-            lighting += computeBRDF(v_Position - u_LightPos[i].xyz, 
-                u_LightColor[i]);
-                continue;
+            lightPos += v_Position;
         }
-        lighting += computeBRDF(-u_LightPos[i].xyz, u_LightColor[i]);
+        lighting += computeDiffuse(lightPos, u_LightColor[i], colorMix.xyz);
+        lighting += computeSpecular(lightPos, u_LightColor[i]);
     }
 
     // add more color depth by making brighter values than 1 whiter
-    vec3 color_out = desaturate(colorMix.xyz * (u_Ambient.xyz + lighting));
+    vec3 color_out = desaturate(colorMix.xyz * u_Ambient.xyz + lighting);
 
     gl_FragColor = vec4(color_out, colorMix.a);
 }
