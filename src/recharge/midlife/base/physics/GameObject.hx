@@ -18,6 +18,9 @@ class GameObject extends Node {
   public var isStatic:Bool;
   public var shape:SDF;
 
+  var _dtCounter:Float = 0;
+  static var _dtStep:Float = 0.016; // 60 FPS
+
   public function new(name:String = "GameObject", ?params:Dynamic) {
     super(name, params);
 
@@ -56,12 +59,18 @@ class GameObject extends Node {
   override public function update(dt:Float):Void {
     super.update(dt);
 
-    if (isStatic)
-      return;
+    _dtCounter += dt;
 
-    var parentAsWorld:World = cast(parent, World);
-    var accSum = acceleration + parentAsWorld.gravity;
-    position += velocity * dt + accSum * dt * dt / 2;
-    velocity += accSum * dt;
+    while (_dtCounter >= _dtStep) {
+      _dtCounter -= _dtStep;
+
+      if (isStatic)
+        return;
+
+      var parentAsWorld:World = cast(parent, World);
+      var accSum = acceleration + parentAsWorld.gravity;
+      position += velocity * _dtStep + accSum * _dtStep * _dtStep / 2;
+      velocity += accSum * _dtStep;
+    }
   }
 }
