@@ -24,16 +24,16 @@ Offer compatibility with the RetroLib API but build natively to
 ### Render Pipeline
 
 - [x] In order for a unit plane to be 1:1 with a 320x240 window, the z-position should equal 10
-- [ ] The following textures should be usable and/or optional. They should also be layered in this order:
+- [ ] The following PBR parameters should be controllable:
   - [x] Diffuse
-  - [ ] First Diffuse can be color manipulated
+  - [x] First Diffuse can be color manipulated
   - [ ] Diffuse 2 (NOT Color Manipulated)
   - [ ] Specular
   - [ ] Normal
-- [x] There is a controllable light and an option to add point lights if needed
+- [x] There is controllable light and an option to add point lights if needed
 - [ ] The rendering pipeline knows how to differentiate between the following
   - [x] Environment Models
-  - [ ] Environment Lines
+  - [ ] Environment Lines (Will be needed for a certain game idea)
   - [x] UI Rendering
 
 > To-Do: Consult with a 3D Artist what the standard maps are for a model and how color manipulation is usually used in development
@@ -43,22 +43,34 @@ Offer compatibility with the RetroLib API but build natively to
 - [x] Although resizable, a standard game viewport and window is 640x480px
 - [x] Assuming no rotation or camera reconfiguration, if the object has a distance of 10 each unit should be 1 pixel at standard window size
 - [ ] Graphics will scale as the window resizes keeping the ratio to the best of its ability
-- [ ] UI should not be required to scale
+- [ ] UI should not be required to scale drastically
 
 ## UI
 
-- [ ] A UI System that is compatible with not just a mouse, but navigatable with a controller too
+- [x] A UI System that is compatible with a controller first
+  - [ ] Mouse functionality would be nice too
+- [ ] The following should be implemented
+  - [x] Labels
+  - [x] Buttons
+  - [ ] UI Images
+  - [ ] Text Input Fields
 
 ## Input
 
-- [ ] Using an InputManager, the game can access a standard set of inputs
-- [x] Inputs entirely depend on predefined callbacks
-- [ ] You will have to define functions that populate the input manager depending on the platform you are playing on
+- [ ] Input manager itself is generic but can also read rising/falling edges of inputs
+- [ ] The following inputs are pre-defined for the game engine
+  - [x] D-pad
+  - [x] A Button
+  - [ ] B Button
+  - [ ] X Button
+  - [ ] Y Button
+  - [ ] Shoulder Buttons
+  - [ ] Pause
 
 ## Files
 
 - [ ] File loading should be simplified by combining external and embedded file
-reading into one class
+reading into one class to read file data from
 - [ ] You can read files with the following priority:
   - [x] Embedded Files
   - [x] Game Assets
