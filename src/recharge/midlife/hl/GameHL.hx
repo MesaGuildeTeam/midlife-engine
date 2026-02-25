@@ -87,11 +87,10 @@ class GameHL extends recharge.midlife.base.GameAbstract {
       var dt = (currentTime - previousTime) * 2;
       this.updateScene(dt);
 
-      GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
       this.drawScene();
+      GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
+      _renderer.flush(_currentScene);
       window.present();
-
-      // Sdl.delay(Std.int(1000 / 60));
     }
 
     window.destroy();

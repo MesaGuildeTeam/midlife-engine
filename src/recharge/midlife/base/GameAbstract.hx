@@ -86,7 +86,6 @@ class GameAbstract {
 
   public function drawScene():Void {
     _currentScene.draw();
-    _renderer.flush(_currentScene);
   }
 
   public function updateScene(dt:Float):Void {
