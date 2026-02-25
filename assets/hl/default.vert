@@ -1,5 +1,3 @@
-#version 140
-
 precision mediump float;
 
 attribute vec3 a_Position;
