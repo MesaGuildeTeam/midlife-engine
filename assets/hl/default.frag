@@ -65,12 +65,13 @@ vec3 computeBRDF(vec3 lightPos, vec4 color) {
     vec3 fresnel = ks * lightOnObj
         * pow(1.0 - max(0.0, dot(normalize(v_Normal), v_CameraDir)), 3.0) * color.xyz;
 
-    // Option 1: Just Diffuse and Specular
-    //return kd * diffuse + specular;
-    // Option 2: Replace Specular with fresnel
-    //return kd * diffuse + (3.0 * fresnel * length(diffuse));
-    // Option 3: Combine Fresnel with Diffuse
-    return kd * diffuse + specular + (3.0 * fresnel * length(diffuse));
+    vec3 result = kd * diffuse;
+    // Enable Specular
+    result += specular;
+    // Enable Fresnel
+    result += (3.0 * fresnel * length(diffuse + u_Ambient.xyz));
+    
+    return result;
 }
 
 /*
