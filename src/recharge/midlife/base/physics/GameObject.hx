@@ -19,6 +19,7 @@ class GameObject extends Node {
   public var shape:SDF;
 
   var _dtCounter:Float = 0;
+  var _physicsReady:Bool = false;
   static var _dtStep:Float = 0.016; // 60 FPS
 
   public function new(name:String = "GameObject", ?params:Dynamic) {
@@ -50,14 +51,28 @@ class GameObject extends Node {
   public function onCollision(obj:GameObject, ?preComputeNewVel:Bool):Void {}
 
   override public function init() {
-    if (parent == null || !(parent is World))
-      throw("GameObject must be added to a World node to be able to simulate physics.");
-
     super.init();
+
+    if (parent == null || !(parent is World))
+      return trace("GameObject must be added to a World node to be able to simulate physics.");
+    
+    _physicsReady = true;
+  }
+
+  public override function get_transform():Mat4 {
+    var thisMat = Utils.genTransformMatrix(position, scale, rotation);
+
+    if (parent != null)
+      return parent.get_transform() * thisMat;
+
+    return thisMat;
   }
 
   override public function update(dt:Float):Void {
     super.update(dt);
+
+    if (!_physicsReady)
+      return;
 
     _dtCounter += dt;
 

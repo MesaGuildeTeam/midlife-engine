@@ -112,6 +112,16 @@ class RendererHL extends RendererAbstract {
     var lightCount = GL.getUniformLocation(shader, "u_LightCount");
     if (lightCount != null)
       GL.uniform1i(lightCount, scene.lights.length);
+
+    // Camera matrix
+    var camPos = GL.getUniformLocation(shader, "u_Camera");
+    if (camPos != null) {
+      var tfArray = new Array<Float>();
+      var camMatrix = scene.camera != null ? scene.camera.transform.inverse() : mat4(1.0);
+      camMatrix.copyIntoArray(tfArray, 0);
+      var camMatrix32 = Float32Array.fromArray(tfArray).getData();
+      GL.uniformMatrix4fv(camPos, false, Bytes.fromBytes(camMatrix32.bytes), 0, 1);
+    }
   }
 
   override function drawInstruction(instruction:RenderInstruction,

@@ -1,5 +1,8 @@
 package examples;
 
+import recharge.midlife.base.Game;
+import recharge.midlife.base.physics.GameObject;
+import recharge.midlife.base.Node;
 import recharge.midlife.base.sdf.SDF;
 import recharge.midlife.base.graphics.SurfaceNet;
 import recharge.midlife.base.graphics.Mesh;
@@ -7,6 +10,7 @@ import recharge.midlife.base.graphics.Shapes;
 import recharge.midlife.base.graphics.Renderer;
 import recharge.midlife.base.graphics.Texture;
 import recharge.midlife.base.Game;
+import recharge.midlife.base.Scene;
 import recharge.midlife.base.Node;
 import recharge.midlife.base.NodeFactory;
 
@@ -15,8 +19,8 @@ class HelloWorld extends Node {
   static var registry = NodeFactory.register(HelloWorld);
 
   var time:Float = 0.0;
-  var mesh:Mesh = new SurfaceNet(new SDFSubtraction([new SphereSDF(2), new SphereSDF(2,
-    vec3(1.0))]));
+  static var mesh:Mesh = new SurfaceNet(new SDFSubtraction([new SphereSDF(2), new SphereSDF(2,
+    vec3(1.0))]), 32);
   // var mesh:Mesh = new Cube();
   var texture:Texture = new Texture("assets/placeholder.png");
 
@@ -27,10 +31,15 @@ class HelloWorld extends Node {
     super(name, params);
   }
 
+  public override function init() {
+    var camera = new GameObject("Camera", {position: vec3(0, 0, 5)});
+    addChild(camera);
+  }
+
   public override function draw():Void {
     lightId = Game.getInstance()
       .getScene()
-      .lights.setLight(vec4(0, 1, -1, 0), vec4(1, 1, 1, 1), lightId);
+      .lights.setLight(vec4(0, 2, 8, 1), vec4(1, 1, 1, 2), lightId);
 
     // lightId2 = Game.getInstance()
     //   .getScene()
@@ -49,5 +58,8 @@ class HelloWorld extends Node {
   public override function update(dt:Float):Void {
     super.update(dt);
     time += dt * 8;
+
+    var scene = cast(parent, Scene);
+    scene.camera = getChild("Camera");
   }
 }

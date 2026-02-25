@@ -15,6 +15,12 @@ import recharge.midlife.base.graphics.LightArray;
  */
 class Scene extends Node {
   public var lights:LightArray;
+
+  /**
+   * A public reference to the camera position of the scene. If this is null
+   * then the scene will just use an identity transformation as the camera.
+   * You can set this to any node
+   */
   public var camera:Node;
 
   public function new(name:String = "Scene", ?params:Dynamic) {
