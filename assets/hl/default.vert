@@ -20,7 +20,7 @@ void main() {
 
     vec4 position = u_Transform * vec4(a_Position, 1.0);
     v_Position = position.xyz;
-    v_CameraDir = normalize((u_Camera * vec4(0.0, 0.0, 1.0, 0.0)).xyz);
+    v_CameraDir = normalize((u_Camera * vec4(0.0, 0.0, 1.0, 0.0)).xyz + vec3(v_Position.xy / v_Position.z, 0.0));
 
     gl_Position = u_Camera * position;
 
