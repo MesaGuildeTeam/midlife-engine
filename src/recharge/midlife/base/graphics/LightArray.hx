@@ -22,9 +22,10 @@ class LightArray {
       return Std.int(_positions.length / 4) - 1;
     }
 
-    _positions[id * 3] = position.x;
-    _positions[id * 3 + 1] = position.y;
-    _positions[id * 3 + 2] = position.z;
+    _positions[id * 4] = position.x;
+    _positions[id * 4 + 1] = position.y;
+    _positions[id * 4 + 2] = position.z;
+    _positions[id * 4 + 3] = position.w;
 
     _color[id * 4] = color.x;
     _color[id * 4 + 1] = color.y;
@@ -52,6 +53,6 @@ class LightArray {
   public var length(get, never):Int;
 
   public function get_length():Int {
-    return Std.int(_positions.length / 3);
+    return Std.int(_positions.length / 4);
   }
 }
