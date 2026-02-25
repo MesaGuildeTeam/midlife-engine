@@ -18,7 +18,7 @@ class ShaderAbstract {
   }
 
   function compileShader():Void {
-    trace("WARN: Shader compilation not implemented. Applying default values.");
+    trace("WARNING: Shader compilation not implemented. Applying default values.");
     _program = 1;
   }
 

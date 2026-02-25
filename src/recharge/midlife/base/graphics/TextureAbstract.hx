@@ -13,7 +13,7 @@ class TextureAbstract {
   public var _path:String;
 
   function loadTexture():Void {
-    trace("WARN: texture loading process is undefined. Will default to 0");
+    trace("WARNING: texture loading process is undefined. Will default to 0");
     _texture = 0;
     _dimensions = vec2(0, 0);
   }

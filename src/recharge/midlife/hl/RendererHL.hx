@@ -47,7 +47,7 @@ class RendererHL extends RendererAbstract {
 
     // GL.clearDepth(1.0);
 
-    trace("Renderer Initialized");
+    trace("DEBUG: Renderer Initialized");
 
     // Initialize Shader so we can get attribute locations
     var _currentShader = cast ShaderHL.defaultShader.getShaderProgram();

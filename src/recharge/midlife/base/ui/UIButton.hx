@@ -76,7 +76,7 @@ class UIButton extends UIElement {
     var bestAngle = Math.POSITIVE_INFINITY;
 
     for (neighbor in neighbors) {
-      if (neighbor == this || !(Std.is(neighbor, UIButton))) continue;
+      if (neighbor == this || !(Std.isOfType(neighbor, UIButton))) continue;
       var castedNeighbor:UIButton = cast(neighbor, UIButton);
 
       var toNeighbor:Vec2 = castedNeighbor.getPosition() - getPosition();

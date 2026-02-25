@@ -102,7 +102,7 @@ class GameAbstract {
 
   function set_dimensions(value:Vec2):Vec2 {
     _windowDimensions = value;
-    trace("Window resized to " + _windowDimensions);
+    trace("DEBUG: Window resized to " + _windowDimensions);
     return _windowDimensions;
   }
 

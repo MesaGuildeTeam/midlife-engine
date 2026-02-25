@@ -72,11 +72,11 @@ class NodeFactory {
     @return True if the registration was successful.
   **/
   public static function register(nodeClass:Class<Node>):Bool {
-    trace("NodeFactory: registering " + Type.getClassName(nodeClass));
+    trace("DEBUG: NodeFactory registering " + Type.getClassName(nodeClass));
     var name = Type.getClassName(nodeClass);
 
     if (registry.exists(name)) {
-      throw("NodeFactory: Node class already registered: " + name);
+      throw("DEBUG: NodeFactory Node class already registered: " + name);
       return false;
     }
     registry[name] = nodeClass;
