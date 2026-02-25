@@ -1,3 +1,5 @@
+#version 140
+
 precision mediump float;
 
 attribute vec3 a_Position;
@@ -10,6 +12,7 @@ uniform mat4 u_Camera;
 varying vec3 v_Position;
 varying vec2 v_UV;
 varying vec3 v_Normal;
+varying vec3 v_CameraDir;
 
 void main() {
     float pixPerUnit = 16.0;
@@ -17,6 +20,7 @@ void main() {
 
     vec4 position = u_Transform * vec4(a_Position, 1.0);
     v_Position = position.xyz;
+    v_CameraDir = normalize((u_Camera * vec4(0.0, 0.0, 1.0, 0.0)).xyz);
 
     gl_Position = u_Camera * position;
 
