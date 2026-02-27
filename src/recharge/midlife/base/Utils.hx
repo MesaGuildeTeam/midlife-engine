@@ -55,7 +55,7 @@ class Utils {
     rz[0][1] = Math.sin(rotation.z / 180.0 * Math.PI);
     rz[1][0] = -Math.sin(rotation.z / 180.0 * Math.PI);
 
-    m = t * (rx * ry * rz) * s;
+    m = t * (rz * ry * rx) * s;
 
     return m;
   }
