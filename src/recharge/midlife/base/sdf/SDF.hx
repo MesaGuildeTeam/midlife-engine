@@ -111,32 +111,24 @@ class SphereSDF extends SDFAbstract {
 
 class BoxSDF extends SDFAbstract {
   var _bounds:Vec3;
+  var _roundness:Float;
 
-  public function new(bounds:Vec3) {
+  public function new(bounds:Vec3, roundness:Float = 0) {
     _bounds = bounds;
+    _roundness = roundness;
   }
 
   override public function computeDistance(point:Vec3):Float {
-    var q:Vec3 = abs(point) - _bounds / 2;
-    return length(max(q, 0)) + min(max(q.x,max(q.y,q.z)), 0);
+    var q:Vec3 = abs(point) - _bounds / 2 + _roundness;
+    return length(max(q, 0)) + min(max(q.x,max(q.y,q.z)), 0) - _roundness;
   }
 
-  // override public function getNormal(point:Dynamic):Vec3 {
-  //   var w = abs(point - _bounds / 2) - _bounds;
-  //   var g = max(w.x, max(w.y, w.z));
-  //   var q = max(g,0);
-  //   var l = length(q);
-  //   var f = g > 0 ? vec3(q/l) : vec3(w.x == g? 1 : 0, w.y == g ? q : 0, w.z == g? 1 : 0);
-    
-  //   return f * sign(point);
-  // }
-
   override public function getTopLeft():Vec3 {
-    return _bounds * -1.1;
+    return _bounds * -1.3;
   }
 
   override public function getBottomRight():Vec3 {
-    return _bounds * 1.1;
+    return _bounds * 1.3;
   }
 }
 
