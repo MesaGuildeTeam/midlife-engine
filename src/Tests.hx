@@ -9,6 +9,7 @@ class Tests {
     testRunner.addCase(new tests.UtilsTests());
     testRunner.addCase(new tests.InputTest());
     testRunner.addCase(new tests.PhysicsObjectTest());
+    testRunner.addCase(new tests.SDFTest());
 
     #if carpengine_coverage
     testRunner.run();

@@ -36,7 +36,7 @@ uniform int u_usesTexture[2];
 uniform vec4 u_DiffuseColor;
 
 #define kd 1.0
-#define ks 1.0
+#define ks 0.0
 #define lh 0.5
 
 /**
@@ -97,13 +97,11 @@ vec3 desaturate(vec3 color) {
 void main() {
 
     // Textures 
-    vec4 color_diffuse = vec4(1.0, 1.0, 1.0, 1.0);
+    vec4 color_diffuse = u_DiffuseColor;
     vec4 color_diffuse2 = vec4(0.0);
 
     if (u_usesTexture[0] == 1)
         color_diffuse = texture2D(u_Diffuse, v_UV);
-
-    color_diffuse *= u_DiffuseColor;
 
     // colorMix is the combination of the base diffuse, but the second diffuse layer is mapped on top
     vec4 colorMix = mix(color_diffuse, color_diffuse2, color_diffuse2.a);
@@ -113,9 +111,9 @@ void main() {
     // Point Lights 
     vec3 lighting = vec3(0.0);
     for (int i = 0; i < u_LightCount; i++) {
-        vec3 lightPos = -u_LightPos[i].xyz;
+        vec3 lightPos = u_LightPos[i].xyz;
         if (u_LightPos[i].w >= 1.0) {
-            lightPos += v_Position;
+            lightPos -= v_Position;
         }
         lighting += computeDiffuse(lightPos, u_LightColor[i], colorMix.xyz);
         lighting += computeSpecular(lightPos, u_LightColor[i]);

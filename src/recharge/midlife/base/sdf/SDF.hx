@@ -1,14 +1,14 @@
 package recharge.midlife.base.sdf;
 
+import VectorMath.sign;
+import VectorMath.length;
 import recharge.midlife.base.Utils;
 
 /**
  * A generic Signed Distance Field for computing basic shapes
  */
 class SDFAbstract {
-  var shapeType:SDFType = null;
-
-  inline static var dt = 0.01;
+  inline static var dt = 0.001;
 
   /**
    * Computes the distance before collision with an SDF
@@ -26,7 +26,7 @@ class SDFAbstract {
     var dist = computeDistance(point);
     var normal = getNormal(point);
 
-    return point + normal * dist;
+    return point - normal * dist;
   }
 
   /**
@@ -37,12 +37,21 @@ class SDFAbstract {
    * @return Vec3 the normal vector computed
    */
   public function getNormal(point:Vec3):Vec3 {
-    return normalize(vec3(computeDistance(point - vec3(dt, 0, 0))
-      - computeDistance(point + vec3(dt, 0, 0)),
-      computeDistance(point - vec3(0, dt, 0))
-      - computeDistance(point + vec3(0, dt, 0)),
-      computeDistance(point - vec3(0, 0, dt))
-      - computeDistance(point + vec3(0, 0, dt)),));
+    // var norm = normalize(vec3(computeDistance(point + vec3(dt, 0, 0))
+    //   - computeDistance(point - vec3(dt, 0, 0)),
+    //   computeDistance(point + vec3(0, dt, 0))
+    //   - computeDistance(point - vec3(0, dt, 0)),
+    //   computeDistance(point + vec3(0, 0, dt))
+    //   - computeDistance(point - vec3(0, 0, dt))));
+    var k = vec3(1, -1, 0);
+
+    var norm = normalize(
+      k.xyy * computeDistance(point + k.xyy * dt) +
+      k.yyx * computeDistance(point + k.yyx * dt) +
+      k.yxy * computeDistance(point + k.yxy * dt) +
+      k.xxx * computeDistance(point + k.xxx * dt)
+    );
+    return norm;
   }
 
   public function getUV(point:Vec3):Vec2 {
@@ -76,7 +85,7 @@ class SphereSDF extends SDFAbstract {
   }
 
   override public function getNormal(point:Vec3):Vec3 {
-    return vec3(-(point - _pos) / length(point - _pos));
+    return vec3((point - _pos) / length(point - _pos));
   }
 
   override public function getUV(point:Vec3):Vec2 {
@@ -87,7 +96,7 @@ class SphereSDF extends SDFAbstract {
       -(Math.cos(Math.PI * point.y / (_radius * 2) + Math.PI / 2) - 1) / 2);
   }
 
-  override public function computeDistance(point:Vec3) {
+  override public function computeDistance(point:Vec3):Float {
     return length(point - _pos) - _radius;
   }
 
@@ -97,6 +106,37 @@ class SphereSDF extends SDFAbstract {
 
   override public function getBottomRight():Vec3 {
     return _pos + vec3(_radius + 0.5);
+  }
+}
+
+class BoxSDF extends SDFAbstract {
+  var _bounds:Vec3;
+
+  public function new(bounds:Vec3) {
+    _bounds = bounds;
+  }
+
+  override public function computeDistance(point:Vec3):Float {
+    var q:Vec3 = abs(point) - _bounds / 2;
+    return length(max(q, 0)) + min(max(q.x,max(q.y,q.z)), 0);
+  }
+
+  // override public function getNormal(point:Dynamic):Vec3 {
+  //   var w = abs(point - _bounds / 2) - _bounds;
+  //   var g = max(w.x, max(w.y, w.z));
+  //   var q = max(g,0);
+  //   var l = length(q);
+  //   var f = g > 0 ? vec3(q/l) : vec3(w.x == g? 1 : 0, w.y == g ? q : 0, w.z == g? 1 : 0);
+    
+  //   return f * sign(point);
+  // }
+
+  override public function getTopLeft():Vec3 {
+    return _bounds * -1.1;
+  }
+
+  override public function getBottomRight():Vec3 {
+    return _bounds * 1.1;
   }
 }
 

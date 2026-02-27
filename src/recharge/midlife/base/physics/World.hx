@@ -60,10 +60,10 @@ class World extends Node {
         var prevVelA = childA.velocity;
 
         if (childA.isStatic) {
-          childB.velocity = -elasticity * length(childB.velocity) * childA.shape.getNormal((childB.position
+          childB.velocity = elasticity * length(childB.velocity) * childA.shape.getNormal((childB.position
             - childA.position));
         } else if (childB.isStatic) {
-          childA.velocity = -elasticity * length(childA.velocity) * childB.shape.getNormal((childA.position
+          childA.velocity = elasticity * length(childA.velocity) * childB.shape.getNormal((childA.position
             - childB.position));
         } else {
           childA.velocity = ((childA.mass - elasticity * childB.mass) * prevVelA
@@ -76,21 +76,21 @@ class World extends Node {
               + elasticity) * childA.mass * prevVelA) / (childA.mass
               + childB.mass);
 
-          childA.velocity = length(childA.velocity) * childB.shape.getNormal((childB.position
+          childA.velocity = length(childA.velocity) * -childB.shape.getNormal((childB.position
             - childA.position));
-          childB.velocity = length(childB.velocity) * childB.shape.getNormal((childA.position
+          childB.velocity = length(childB.velocity) * -childB.shape.getNormal((childA.position
             - childB.position));
         }
 
         // Minor separation to avoid seeping through
         depth = -depth + 0.05;
         if (!childA.isStatic)
-          childA.position -= childB.shape.getNormal((childA.position
+          childA.position += childB.shape.getNormal((childA.position
             - childB.position)) * depth * childA.mass / (childA.mass
               + childB.mass);
 
         if (!childB.isStatic)
-          childB.position -= childB.shape.getNormal((childB.position
+          childB.position += childB.shape.getNormal((childB.position
             - childA.position)) * depth * childB.mass / (childA.mass
               + childB.mass);
 
