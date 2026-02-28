@@ -65,7 +65,6 @@ class SurfaceNet extends Mesh {
     var sampleDistance = new haxe.ds.Vector<Bool>(res * res * res);
 
     // Sample Mesh
-    var threadCount = new sys.thread.Semaphore(2);
     var canWrite:Bool = true;
     for (z in 0...Std.int(res - 1)) {
       for (y in 0...Std.int(res - 1)) {
@@ -83,11 +82,10 @@ class SurfaceNet extends Mesh {
     for (z in 0...Std.int(res - 1)) {
       for (y in 0...Std.int(res - 1)) {
         for (x in 0...Std.int(res - 1)) {
-          var pos:Vec3 = topLeft + (totalDistance * vec3(x, y, z) / res);
-          
           var center = sampleDistance[Std.int(z * res * res + y * res + x)];
           if (center == false) continue;
-
+          var pos:Vec3 = topLeft + (totalDistance * vec3(x, y, z) / res);
+          
 
           var front = pos + totalDistance * vec3(0, 0, -1) / res;
           var back = pos + totalDistance * vec3(0, 0, 1) / res;

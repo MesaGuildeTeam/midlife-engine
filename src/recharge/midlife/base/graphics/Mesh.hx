@@ -43,22 +43,32 @@ class Mesh {
   var _vertices:Array<Vertex> = new Array();
   var _indices:Array<Int> = new Array();
 
+  // For O(1) vertex identification
+  var _vertexHash:Map<String, Int> = new Map();
+
   var _verticesFloat:Array<Float>;
 
   public function addPoint(point:Vertex):Int {
     if (_verticesFloat != null)
       _verticesFloat = null;
 
+    var key = vertexToKey(point);
+
     // Find the vertex first if it exists
-    if (_vertices.indexOf(point) != -1) {
-      _indices.push(_vertices.indexOf(point));
-      return _vertices.indexOf(point);
+    if (_vertexHash.exists(key)) {
+      _indices.push(_vertexHash.get(key));
+      return _vertexHash.get(key);
     }
 
     // otherwise add it
     _vertices.push(point);
     _indices.push(_vertices.length - 1);
+    _vertexHash.set(key, _vertices.length - 1);
     return _vertices.length - 1;
+  }
+
+  inline function vertexToKey(v:Vertex):String {
+    return '${v.position.x}${v.position.y}${v.position.z}${v.uv.x}${v.uv.y}${v.normal.x}${v.normal.y}${v.normal.z}';
   }
 
   public function addTriangle(a:Vertex, b:Vertex, c:Vertex):Void {

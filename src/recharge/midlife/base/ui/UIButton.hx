@@ -113,7 +113,12 @@ class UIButton extends UIElement {
     var selected = InputManager.getInstance().getInput("ButtonA").isPressed();
 
     if (_hovered && selected) {
+      _hovered = false;
+      #if (target.threaded)
+      sys.thread.Thread.create(click);
+      #else
       click();
+      #end
     }
   }
 }
