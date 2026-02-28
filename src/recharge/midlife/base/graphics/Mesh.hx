@@ -68,7 +68,7 @@ class Mesh {
 
     if (length(v1.normal) == 0 || length(v2.normal) == 0
       || length(v3.normal) == 0)
-      v1.calculateNormals(v2, v3);
+      v1.calculateNormals(v3, v2);
 
     var i1 = addPoint(v1);
     var i2 = addPoint(v2);

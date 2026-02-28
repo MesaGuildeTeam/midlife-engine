@@ -55,10 +55,10 @@ class SurfaceNet extends Mesh {
     #end
   }
 
-  public function new(sdf:SDF, ?res:Float) {
-    var topLeft = sdf.getTopLeft();
-    var totalDistance = sdf.getBottomRight() - topLeft;
-    res = res != null ? res : 12;
+  public function new(sdf:SDF, ?res:Int, ?tl:Vec3, ?br:Vec3) {
+    var topLeft = tl != null ? tl : sdf.getTopLeft();
+    var totalDistance = (br != null ? br : sdf.getBottomRight()) - topLeft;
+    res = res != null ? res : 8;
 
     var dt:Vec3 = totalDistance / vec3(res);
 
