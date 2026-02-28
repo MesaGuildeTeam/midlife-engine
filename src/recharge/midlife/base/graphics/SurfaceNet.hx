@@ -62,18 +62,19 @@ class SurfaceNet extends Mesh {
 
     var dt:Vec3 = totalDistance / vec3(res);
 
-    var sampleDistance:Map<String, Bool> = new Map();
-    var sampleNormals:Map<String, Vec3> = new Map();
+    var sampleDistance = new haxe.ds.Vector<Bool>(res * res * res);
 
     // Sample Mesh
+    var threadCount = new sys.thread.Semaphore(2);
+    var canWrite:Bool = true;
     for (z in 0...Std.int(res - 1)) {
       for (y in 0...Std.int(res - 1)) {
         for (x in 0...Std.int(res - 1)) {
           // sample corners
           var pos:Vec3 = topLeft + (totalDistance * vec3(x, y, z) / res);
-          var posString:String = '${pos.x},${pos.y},${pos.z}';
-          sampleDistance.set(posString, sdf.computeDistance(pos) < 0.0);
-          var n_bfl = sdf.getNormal(pos);
+          var posString:Int = Std.int(z * res * res + y * res + x);
+
+          sampleDistance[posString] = sdf.computeDistance(pos) < 0.0;
         }
       }
     }
@@ -83,6 +84,11 @@ class SurfaceNet extends Mesh {
       for (y in 0...Std.int(res - 1)) {
         for (x in 0...Std.int(res - 1)) {
           var pos:Vec3 = topLeft + (totalDistance * vec3(x, y, z) / res);
+          
+          var center = sampleDistance[Std.int(z * res * res + y * res + x)];
+          if (center == false) continue;
+
+
           var front = pos + totalDistance * vec3(0, 0, -1) / res;
           var back = pos + totalDistance * vec3(0, 0, 1) / res;
           var left = pos + totalDistance * vec3(1, 0, 0) / res;
@@ -90,8 +96,7 @@ class SurfaceNet extends Mesh {
           var top = pos + totalDistance * vec3(0, 1, 0) / res;
           var bottom = pos + totalDistance * vec3(0, -1, 0) / res;
 
-          if (sampleDistance.get('${pos.x},${pos.y},${pos.z}') == true
-            && sampleDistance.get('${front.x},${front.y},${front.z}') == false) {
+          if (sampleDistance[Std.int((z-1) * res * res + y * res + x)] == false) {
             createVoxelFace(pos
               + dt * vec3(-0.5, -0.5, -0.5),
               pos
@@ -102,8 +107,7 @@ class SurfaceNet extends Mesh {
               + dt * vec3(-0.5, 0.5, -0.5), sdf);
           }
 
-          if (sampleDistance.get('${pos.x},${pos.y},${pos.z}') == true
-            && sampleDistance.get('${back.x},${back.y},${back.z}') == false) {
+          if (sampleDistance[Std.int((z+1) * res * res + y * res + x)] == false) {
             createVoxelFace(pos
               + dt * vec3(0.5, -0.5, 0.5),
               pos
@@ -114,8 +118,7 @@ class SurfaceNet extends Mesh {
               sdf);
           }
 
-          if (sampleDistance.get('${pos.x},${pos.y},${pos.z}') == true
-            && sampleDistance.get('${right.x},${right.y},${right.z}') == false) {
+          if (sampleDistance[Std.int(z * res * res + y * res + (x-1))] == false) {
             createVoxelFace(pos
               + dt * vec3(-0.5, -0.5, -0.5),
               pos
@@ -126,8 +129,7 @@ class SurfaceNet extends Mesh {
               + dt * vec3(-0.5, -0.5, 0.5), sdf);
           }
 
-          if (sampleDistance.get('${pos.x},${pos.y},${pos.z}') == true
-            && sampleDistance.get('${left.x},${left.y},${left.z}') == false) {
+          if (sampleDistance[Std.int(z * res * res + y * res + x+1)] == false) {
             createVoxelFace(pos
               + dt * vec3(0.5, 0.5, -0.5),
               pos
@@ -138,8 +140,7 @@ class SurfaceNet extends Mesh {
               sdf);
           }
 
-          if (sampleDistance.get('${pos.x},${pos.y},${pos.z}') == true
-            && sampleDistance.get('${top.x},${top.y},${top.z}') == false) {
+          if (sampleDistance[Std.int(z * res * res + (y+1) * res + x)] == false) {
             createVoxelFace(pos
               + dt * vec3(-0.5, 0.5, -0.5),
               pos
@@ -149,8 +150,7 @@ class SurfaceNet extends Mesh {
               + dt * vec3(-0.5, 0.5, 0.5), sdf);
           }
 
-          if (sampleDistance.get('${pos.x},${pos.y},${pos.z}') == true
-            && sampleDistance.get('${bottom.x},${bottom.y},${bottom.z}') == false) {
+          if (sampleDistance[Std.int(z * res * res + (y-1) * res + x)] == false) {
             createVoxelFace(pos
               + dt * vec3(-0.5, -0.5, -0.5),
               pos
