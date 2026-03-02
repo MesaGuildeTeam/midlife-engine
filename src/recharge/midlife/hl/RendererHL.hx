@@ -120,7 +120,8 @@ class RendererHL extends RendererAbstract {
       var camMatrix = scene.camera != null ? scene.camera.transform.inverse() : mat4(1.0);
       camMatrix.copyIntoArray(tfArray, 0);
       var camMatrix32 = Float32Array.fromArray(tfArray).getData();
-      GL.uniformMatrix4fv(camPos, false, Bytes.fromBytes(camMatrix32.bytes), 0, 1);
+      GL.uniformMatrix4fv(camPos, false, Bytes.fromBytes(camMatrix32.bytes),
+        0, 1);
     }
   }
 
@@ -160,7 +161,8 @@ class RendererHL extends RendererAbstract {
 
     var udcUniform = GL.getUniformLocation(currentShader, "u_DiffuseColor");
     if (udcUniform != null) {
-      var c = instruction.diffuseColor != null ? instruction.diffuseColor : vec4(1, 1, 1, 1);
+      var c = instruction.diffuseColor != null ? instruction.diffuseColor : vec4(1,
+        1, 1, 1);
       var v = Float32Array.fromArray([c.x, c.y, c.z, c.w]).getData();
       GL.uniform4fv(udcUniform, Bytes.fromBytes(v.bytes), 0, 1);
     }

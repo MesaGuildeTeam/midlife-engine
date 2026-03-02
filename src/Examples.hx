@@ -30,7 +30,7 @@ class ExampleTraverser extends Scene {
     trace("Loading example " + name);
     _currentExample = name;
     addChild(NodeFactory.create(_currentExample, _currentExample));
-    
+
     // These are here because technically we never switch scenes
     lights.clearLights();
     camera = null;

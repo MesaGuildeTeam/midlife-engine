@@ -10,7 +10,7 @@ import recharge.midlife.base.graphics.Mesh;
 // find how to reduce the vertex count by merging adjacent faces together.
 //
 // The goal would be to replace the sampling step with an octree-based structure.
-// This may potentially get more expensive to generate, but would allow for much 
+// This may potentially get more expensive to generate, but would allow for much
 // more efficient meshes and would be necessary for larger SDFs.
 //
 // This is not a priority at the moment for the game prototype, but maps may get
@@ -36,12 +36,10 @@ class SurfaceNet extends Mesh {
   inline function createVoxelFace(v1:Vec3, v2:Vec3, v3:Vec3, v4:Vec3,
       sdf:SDF):Void {
     // Only for testing so we can see the actual voxels instead of the projected
-    // vertices on the surface of the SDF 
+    // vertices on the surface of the SDF
     #if test_voxels
-    addQuad(new Vertex(v1, sdf.getUV(v1)),
-      new Vertex(v2, sdf.getUV(v2)),
-      new Vertex(v3, sdf.getUV(v3)),
-      new Vertex(v4, sdf.getUV(v4)));
+    addQuad(new Vertex(v1, sdf.getUV(v1)), new Vertex(v2, sdf.getUV(v2)),
+      new Vertex(v3, sdf.getUV(v3)), new Vertex(v4, sdf.getUV(v4)));
     #else
     var iv1:Vec3 = sdf.getClosestPoint(v1);
     var iv2:Vec3 = sdf.getClosestPoint(v2);
@@ -83,9 +81,10 @@ class SurfaceNet extends Mesh {
       for (y in 0...Std.int(res - 1)) {
         for (x in 0...Std.int(res - 1)) {
           var center = sampleDistance[Std.int(z * res * res + y * res + x)];
-          if (center == false) continue;
+          if (center == false)
+            continue;
           var pos:Vec3 = topLeft + (totalDistance * vec3(x, y, z) / res);
-          
+
 
           var front = pos + totalDistance * vec3(0, 0, -1) / res;
           var back = pos + totalDistance * vec3(0, 0, 1) / res;
@@ -94,7 +93,9 @@ class SurfaceNet extends Mesh {
           var top = pos + totalDistance * vec3(0, 1, 0) / res;
           var bottom = pos + totalDistance * vec3(0, -1, 0) / res;
 
-          if (sampleDistance[Std.int((z-1) * res * res + y * res + x)] == false) {
+          if (sampleDistance[Std.int((z - 1) * res * res
+            + y * res
+            + x)] == false) {
             createVoxelFace(pos
               + dt * vec3(-0.5, -0.5, -0.5),
               pos
@@ -105,7 +106,9 @@ class SurfaceNet extends Mesh {
               + dt * vec3(-0.5, 0.5, -0.5), sdf);
           }
 
-          if (sampleDistance[Std.int((z+1) * res * res + y * res + x)] == false) {
+          if (sampleDistance[Std.int((z + 1) * res * res
+            + y * res
+            + x)] == false) {
             createVoxelFace(pos
               + dt * vec3(0.5, -0.5, 0.5),
               pos
@@ -116,7 +119,9 @@ class SurfaceNet extends Mesh {
               sdf);
           }
 
-          if (sampleDistance[Std.int(z * res * res + y * res + (x-1))] == false) {
+          if (sampleDistance[Std.int(z * res * res
+            + y * res
+            + (x - 1))] == false) {
             createVoxelFace(pos
               + dt * vec3(-0.5, -0.5, -0.5),
               pos
@@ -127,7 +132,10 @@ class SurfaceNet extends Mesh {
               + dt * vec3(-0.5, -0.5, 0.5), sdf);
           }
 
-          if (sampleDistance[Std.int(z * res * res + y * res + x+1)] == false) {
+          if (sampleDistance[Std.int(z * res * res
+            + y * res
+            + x
+            + 1)] == false) {
             createVoxelFace(pos
               + dt * vec3(0.5, 0.5, -0.5),
               pos
@@ -138,7 +146,9 @@ class SurfaceNet extends Mesh {
               sdf);
           }
 
-          if (sampleDistance[Std.int(z * res * res + (y+1) * res + x)] == false) {
+          if (sampleDistance[Std.int(z * res * res
+            + (y + 1) * res
+            + x)] == false) {
             createVoxelFace(pos
               + dt * vec3(-0.5, 0.5, -0.5),
               pos
@@ -148,7 +158,9 @@ class SurfaceNet extends Mesh {
               + dt * vec3(-0.5, 0.5, 0.5), sdf);
           }
 
-          if (sampleDistance[Std.int(z * res * res + (y-1) * res + x)] == false) {
+          if (sampleDistance[Std.int(z * res * res
+            + (y - 1) * res
+            + x)] == false) {
             createVoxelFace(pos
               + dt * vec3(-0.5, -0.5, -0.5),
               pos

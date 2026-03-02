@@ -34,7 +34,9 @@ class UIButton extends UIElement {
   }
 
   var _callback:Void->Void;
+
   public var callback(never, set):Void->Void;
+
   function set_callback(callback:Void->Void):Void->Void {
     _callback = callback;
     return callback;
@@ -56,7 +58,9 @@ class UIButton extends UIElement {
 
   public override function draw() {
     Game.getInstance().getRenderer().pushShader(UIElement.uiShader);
-    Game.getInstance().getRenderer().pushDiffuseColor(_hovered ? _colorHover : _colorNormal);
+    Game.getInstance()
+      .getRenderer()
+      .pushDiffuseColor(_hovered ? _colorHover : _colorNormal);
     Game.getInstance()
       .getRenderer()
       .queueMesh(UIElement.uiPlane, vec3(getPosition() * vec2(1, -1), 0.1),
@@ -69,22 +73,27 @@ class UIButton extends UIElement {
     var neighbors = parent.getChildren();
 
     // 1 because the neighbor could be itself too
-    if (neighbors.length == 1) return null;
+    if (neighbors.length == 1)
+      return null;
 
     var bestNeighbor:Null<UIButton> = null;
     var bestDot = Math.POSITIVE_INFINITY;
     var bestAngle = Math.POSITIVE_INFINITY;
 
     for (neighbor in neighbors) {
-      if (neighbor == this || !(Std.isOfType(neighbor, UIButton))) continue;
+      if (neighbor == this || !(Std.isOfType(neighbor, UIButton)))
+        continue;
       var castedNeighbor:UIButton = cast(neighbor, UIButton);
 
       var toNeighbor:Vec2 = castedNeighbor.getPosition() - getPosition();
       var dot = toNeighbor.length();
-      var angle = Math.atan2(toNeighbor.y, toNeighbor.x) - Math.atan2(direction.y, direction.x);
+      var angle = Math.atan2(toNeighbor.y, toNeighbor.x)
+        - Math.atan2(direction.y, direction.x);
 
-      if (Math.abs(angle) >= Math.PI / 2) continue;
-      if (bestAngle < angle && bestDot < dot) continue;
+      if (Math.abs(angle) >= Math.PI / 2)
+        continue;
+      if (bestAngle < angle && bestDot < dot)
+        continue;
       bestDot = dot;
       bestAngle = angle;
       bestNeighbor = castedNeighbor;

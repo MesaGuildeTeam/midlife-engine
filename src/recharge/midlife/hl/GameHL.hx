@@ -56,7 +56,7 @@ class GameHL extends recharge.midlife.base.GameAbstract {
     }));
 
     InputManager.getInstance().setInput("ButtonA", new Input(() -> {
-      return InputParamMap.get(32); 
+      return InputParamMap.get(32);
     }));
 
     var currentTime = Timer.stamp();
@@ -88,7 +88,8 @@ class GameHL extends recharge.midlife.base.GameAbstract {
       this.updateScene(dt);
 
       this.drawScene();
-      GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
+      GL.clear(GL.COLOR_BUFFER_BIT);
+      GL.clear(GL.DEPTH_BUFFER_BIT);
       _renderer.flush(_currentScene);
       window.present();
     }

@@ -95,7 +95,7 @@ class UIElement extends Node {
       case TOP_RIGHT:
         return topLeft
           + vec2(containerSize.x - _dimensions.x, 0)
-          + vec2(-_offset.x, _offset.y);
+          + _offset * vec2(-1, 1);
       case MIDDLE_LEFT:
         return topLeft
           + vec2(0, containerSize.y / 2 - _dimensions.y / 2)
@@ -108,12 +108,14 @@ class UIElement extends Node {
             containerSize.y / 2 - _dimensions.y / 2)
           + _offset;
       case BOTTOM_LEFT:
-        return topLeft + vec2(0, containerSize.y - _dimensions.y) + _offset;
+        return topLeft
+          + vec2(0, containerSize.y - _dimensions.y)
+          + _offset * vec2(1, -1);
       case BOTTOM_CENTER:
         return topLeft
           + vec2(containerSize.x / 2 - _dimensions.x / 2,
             containerSize.y - _dimensions.y)
-          + _offset;
+          + _offset * vec2(1, -1);
       case BOTTOM_RIGHT:
         return topLeft + containerSize - _dimensions - _offset;
     }

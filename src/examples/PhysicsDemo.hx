@@ -18,7 +18,7 @@ class PhysicsDemo extends World {
 
   var Surface:GameObject;
   var Surface2:GameObject;
-  var lightId:Int;
+  var lightId:Null<Int>;
 
   static var BallMesh:Mesh = new SurfaceNet(new SphereSDF(1));
 
@@ -27,7 +27,7 @@ class PhysicsDemo extends World {
   public function new(name:String, ?params:Dynamic) {
     super(name, params);
     gravity = vec3(0, -9.81, 0);
-    Ball = new GameObject("Ball", {position: vec3(0.25, 6, 10)});
+    Ball = new GameObject("Ball", {position: vec3(0, 6, 9.75)});
     Ball2 = new GameObject("Ball", {position: vec3(0, 3, 10)});
 
     Surface = new GameObject("Surface",
@@ -54,7 +54,7 @@ class PhysicsDemo extends World {
   public override function draw() {
     lightId = Game.getInstance()
       .getScene()
-      .lights.setLight(vec4(0, 1, -1, 0), vec4(1, 1, 1, 1), lightId);
+      .lights.setLight(vec4(3, 1, -4, 0), vec4(1, 1, 1, 10), lightId);
 
     var renderer:Renderer = Game.getInstance().getRenderer();
     renderer.setBackgroundColor(vec3(0.0, 0.1, 0.0));
