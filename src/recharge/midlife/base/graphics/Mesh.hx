@@ -45,6 +45,7 @@ class Mesh {
 
   // For O(1) vertex identification
   var _vertexHash:Map<String, Int> = new Map();
+  var _vertexCenter:Vec3 = vec3(0);
 
   var _verticesFloat:Array<Float>;
 
@@ -64,11 +65,17 @@ class Mesh {
     _vertices.push(point);
     _indices.push(_vertices.length - 1);
     _vertexHash.set(key, _vertices.length - 1);
+    _vertexCenter += point.position;
     return _vertices.length - 1;
   }
 
+  public function getCenter():Vec3 {
+    return _vertexCenter / _vertices.length;
+  }
+
   inline function vertexToKey(v:Vertex):String {
-    return '${v.position.x}${v.position.y}${v.position.z}${v.uv.x}${v.uv.y}${v.normal.x}${v.normal.y}${v.normal.z}';
+    return
+      '${v.position.x}${v.position.y}${v.position.z}${v.uv.x}${v.uv.y}${v.normal.x}${v.normal.y}${v.normal.z}';
   }
 
   public function addTriangle(a:Vertex, b:Vertex, c:Vertex):Void {

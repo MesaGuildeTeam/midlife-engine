@@ -7,6 +7,7 @@
 package recharge.midlife.base.graphics;
 
 import recharge.midlife.base.Scene;
+import recharge.midlife.base.Game;
 
 import haxe.ds.ArraySort;
 
@@ -35,7 +36,9 @@ class RenderInstruction {
   }
 
   public function getZ():Float {
-    return (transformation * vec4(0, 0, 0, 1)).z;
+    var scene = Game.getInstance().getScene();
+    var cameraTf = scene.camera != null ? scene.camera.transform.inverse() : mat4(1.0);
+    return (cameraTf * transformation * vec4(mesh.getCenter(), 1)).z;
   }
 }
 
@@ -108,7 +111,7 @@ class RendererAbstract {
     _constructingInstruction.textures.set(slot, texture);
   }
 
-  public function pushDiffuseColor(color: Vec4) {
+  public function pushDiffuseColor(color:Vec4) {
     _constructingInstruction.diffuseColor = color;
   }
 

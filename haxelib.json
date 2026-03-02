@@ -4,6 +4,7 @@
     "classPath": "src/",
     "dependencies": {
         "vector-math": "3.0.1",
-        "hlsdl": "1.15.0"
+        "hlsdl": "1.15.0",
+        "format": "3.8.0"
     }
 }

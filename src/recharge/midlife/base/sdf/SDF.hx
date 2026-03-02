@@ -2,6 +2,7 @@ package recharge.midlife.base.sdf;
 
 import VectorMath.sign;
 import VectorMath.length;
+
 import recharge.midlife.base.Utils;
 
 /**
@@ -45,12 +46,10 @@ class SDFAbstract {
     //   - computeDistance(point - vec3(0, 0, dt))));
     var k = vec3(1, -1, 0);
 
-    var norm = normalize(
-      k.xyy * computeDistance(point + k.xyy * dt) +
-      k.yyx * computeDistance(point + k.yyx * dt) +
-      k.yxy * computeDistance(point + k.yxy * dt) +
-      k.xxx * computeDistance(point + k.xxx * dt)
-    );
+    var norm = normalize(k.xyy * computeDistance(point + k.xyy * dt)
+      + k.yyx * computeDistance(point + k.yyx * dt)
+      + k.yxy * computeDistance(point + k.yxy * dt)
+      + k.xxx * computeDistance(point + k.xxx * dt));
     return norm;
   }
 
@@ -120,15 +119,15 @@ class BoxSDF extends SDFAbstract {
 
   override public function computeDistance(point:Vec3):Float {
     var q:Vec3 = abs(point) - _bounds / 2 + _roundness;
-    return length(max(q, 0)) + min(max(q.x,max(q.y,q.z)), 0) - _roundness;
+    return length(max(q, 0)) + min(max(q.x, max(q.y, q.z)), 0) - _roundness;
   }
 
   override public function getTopLeft():Vec3 {
-    return _bounds * -1.3;
+    return _bounds * -1;
   }
 
   override public function getBottomRight():Vec3 {
-    return _bounds * 1.3;
+    return _bounds * 1;
   }
 }
 
@@ -201,6 +200,37 @@ class SDFSubtraction extends SDFAbstract {
   }
 }
 
+class SDFSubSmooth extends SDFAbstract {
+  var _A:SDF;
+  var _B:SDF;
+
+  public function new(group:Array<SDF>) {
+    _A = group[0];
+    _B = group[1];
+  }
+
+  override public function computeDistance(point:Vec3) {
+    var k = 1.75;
+    var h = Math.max(k
+      - Math.abs(-_A.computeDistance(point) - _B.computeDistance(point)), 0);
+
+    return Math.max(_A.computeDistance(point), -_B.computeDistance(point))
+      + h * h * 0.25 / k;
+  }
+
+  override public function getUV(point:Vec3):Vec2 {
+    return _A.getUV(point);
+  }
+
+  override public function getTopLeft():Vec3 {
+    return _A.getTopLeft();
+  }
+
+  override public function getBottomRight():Vec3 {
+    return _A.getBottomRight();
+  }
+}
+
 class SDFIntersection extends SDFAbstract {
   var _A:SDF;
   var _B:SDF;
@@ -221,9 +251,9 @@ class SDFIntersection extends SDFAbstract {
   override public function getTopLeft():Vec3 {
     var tl = vec3(0);
 
-    tl.x = Math.min(_A.getTopLeft().x, _B.getTopLeft().x);
-    tl.y = Math.min(_A.getTopLeft().y, _B.getTopLeft().y);
-    tl.z = Math.min(_A.getTopLeft().z, _B.getTopLeft().z);
+    tl.x = Math.max(_A.getTopLeft().x, _B.getTopLeft().x);
+    tl.y = Math.max(_A.getTopLeft().y, _B.getTopLeft().y);
+    tl.z = Math.max(_A.getTopLeft().z, _B.getTopLeft().z);
 
     return tl;
   }

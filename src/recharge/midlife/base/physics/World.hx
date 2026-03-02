@@ -29,7 +29,8 @@ class World extends Node {
     var center = (intersection.getTopLeft()
       + intersection.getBottomRight()) / 2;
 
-    var depth = intersection.computeDistance(center);
+    var surface = intersection.getClosestPoint(center);
+    var depth = intersection.computeDistance(surface);
     return depth;
   }
 
@@ -48,12 +49,11 @@ class World extends Node {
         if (i == j)
           continue;
         var childB:GameObject = cast(children[j], GameObject);
-
+        
         // Perform Collision Check
         var depth:Float = checkCollision(childA, childB);
         if (depth > 0)
           continue;
-
         // Compute Collisions
 
         var elasticity:Float = 0.8;
@@ -76,10 +76,10 @@ class World extends Node {
               + elasticity) * childA.mass * prevVelA) / (childA.mass
               + childB.mass);
 
-          childA.velocity = length(childA.velocity) * -childB.shape.getNormal((childB.position
-            - childA.position));
-          childB.velocity = length(childB.velocity) * -childB.shape.getNormal((childA.position
-            - childB.position));
+          childA.velocity = length(childA.velocity) *
+            -childB.shape.getNormal((childB.position - childA.position));
+          childB.velocity = length(childB.velocity) *
+            -childB.shape.getNormal((childA.position - childB.position));
         }
 
         // Minor separation to avoid seeping through
