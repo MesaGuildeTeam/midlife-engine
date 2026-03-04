@@ -34,9 +34,18 @@ class World extends Node {
     return depth;
   }
 
+  var _dtCounter:Float = 0;
+
   override public function update(dt:Float):Void {
     super.update(dt);
 
+    _dtCounter += dt;
+    static var _dtStep:Float = 0.016; // 60 FPS
+
+    if (_dtCounter <= _dtStep)
+      return;
+
+    _dtCounter = 0;
     var children = getChildren();
     for (i in 0...children.length) {
       if (!Std.isOfType(children[i], GameObject))
@@ -49,7 +58,7 @@ class World extends Node {
         if (i == j)
           continue;
         var childB:GameObject = cast(children[j], GameObject);
-        
+
         // Perform Collision Check
         var depth:Float = checkCollision(childA, childB);
         if (depth > 0)
@@ -59,12 +68,15 @@ class World extends Node {
         var elasticity:Float = 0.8;
         var prevVelA = childA.velocity;
 
+        var normalA = childA.shape.getNormal(childB.position - childA.position);
+        var normalB = childB.shape.getNormal(childB.position - childA.position);
+
         if (childA.isStatic) {
-          childB.velocity = elasticity * length(childB.velocity) * childA.shape.getNormal((childB.position
-            - childA.position));
+          childB.velocity -= (1
+            + elasticity) * dot(childB.velocity, normalA) * normalA;
         } else if (childB.isStatic) {
-          childA.velocity = elasticity * length(childA.velocity) * childB.shape.getNormal((childA.position
-            - childB.position));
+          childB.velocity -= (1
+            + elasticity) * dot(childA.velocity, normalB) * normalB;
         } else {
           childA.velocity = ((childA.mass - elasticity * childB.mass) * prevVelA
             + (1
@@ -76,23 +88,19 @@ class World extends Node {
               + elasticity) * childA.mass * prevVelA) / (childA.mass
               + childB.mass);
 
-          childA.velocity = length(childA.velocity) *
-            -childB.shape.getNormal((childB.position - childA.position));
-          childB.velocity = length(childB.velocity) *
-            -childB.shape.getNormal((childA.position - childB.position));
+          childA.velocity = length(childA.velocity) * -normalA;
+          childB.velocity = length(childB.velocity) * -normalB;
         }
 
         // Minor separation to avoid seeping through
         depth = -depth + 0.05;
         if (!childA.isStatic)
-          childA.position += childB.shape.getNormal((childA.position
-            - childB.position)) * depth * childA.mass / (childA.mass
-              + childB.mass);
+          childA.position += normalB * depth * childA.mass / (childA.mass
+            + childB.mass);
 
         if (!childB.isStatic)
-          childB.position += childB.shape.getNormal((childB.position
-            - childA.position)) * depth * childB.mass / (childA.mass
-              + childB.mass);
+          childB.position += normalA * depth * childB.mass / (childA.mass
+            + childB.mass);
 
         // Call collision callbacks if available
         childA.onCollision(childB);

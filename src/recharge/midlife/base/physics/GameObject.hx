@@ -12,14 +12,47 @@ class GameObject extends Node {
   public var rotation:Vec3;
   public var scale:Vec3;
 
-  public var velocity:Vec3;
-  public var acceleration:Vec3;
+  public var _velocity:Vec3;
+  public var _acceleration:Vec3;
+
+  static inline var eps = 0.05;
+
+  public var velocity(get, set):Vec3;
+  public var acceleration(get, set):Vec3;
+
+  public function get_velocity():Vec3 {
+    return _velocity;
+  }
+
+  public function set_velocity(v:Vec3):Vec3 {
+    _velocity = v;
+    isResting = false;
+
+    return _velocity;
+  }
+
+  public function get_acceleration():Vec3 {
+    return _acceleration;
+  }
+
+  public function set_acceleration(a:Vec3):Vec3 {
+    _acceleration = a;
+    isResting = false;
+
+    return _acceleration;
+  }
 
   public var isStatic:Bool;
+
+  public var isResting:Bool = false;
+
+  var _restingCounter:Float = 0;
+
   public var shape:SDF;
 
   var _dtCounter:Float = 0;
   var _physicsReady:Bool = false;
+
   static var _dtStep:Float = 0.016; // 60 FPS
 
   public function new(name:String = "GameObject", ?params:Dynamic) {
@@ -54,8 +87,9 @@ class GameObject extends Node {
     super.init();
 
     if (parent == null || !(parent is World))
-      return trace("GameObject must be added to a World node to be able to simulate physics.");
-    
+      return
+        trace("GameObject must be added to a World node to be able to simulate physics.");
+
     _physicsReady = true;
   }
 
@@ -77,15 +111,26 @@ class GameObject extends Node {
     _dtCounter += dt;
 
     while (_dtCounter >= _dtStep) {
-      _dtCounter -= _dtStep;
+      _dtCounter = 0;
 
       if (isStatic)
         return;
 
+      var prevPos = position;
+
       var parentAsWorld:World = cast(parent, World);
       var accSum = acceleration + parentAsWorld.gravity;
-      position += velocity * _dtStep + accSum * _dtStep * _dtStep / 2;
+      if (!isResting)
+        position += velocity * _dtStep + accSum * _dtStep * _dtStep / 2;
       velocity += accSum * _dtStep;
+
+      if (length(position - prevPos) > eps) {
+        _restingCounter = 0;
+        isResting = false;
+      } else {
+        _restingCounter++;
+        isResting = _restingCounter > 120;
+      }
     }
   }
 }
