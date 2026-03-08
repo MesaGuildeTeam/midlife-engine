@@ -15,7 +15,7 @@ class GameObject extends Node {
   public var _velocity:Vec3;
   public var _acceleration:Vec3;
 
-  static inline var eps = 0.05;
+  static inline var eps = 0.03;
 
   public var velocity(get, set):Vec3;
   public var acceleration(get, set):Vec3;
@@ -26,7 +26,9 @@ class GameObject extends Node {
 
   public function set_velocity(v:Vec3):Vec3 {
     _velocity = v;
-    isResting = false;
+
+    if (length(v) > 9.81)
+      isResting = false;
 
     return _velocity;
   }
@@ -37,7 +39,6 @@ class GameObject extends Node {
 
   public function set_acceleration(a:Vec3):Vec3 {
     _acceleration = a;
-    isResting = false;
 
     return _acceleration;
   }
@@ -108,29 +109,35 @@ class GameObject extends Node {
     if (!_physicsReady)
       return;
 
+    if (isStatic)
+      return;
+
     _dtCounter += dt;
 
-    while (_dtCounter >= _dtStep) {
-      _dtCounter = 0;
+    if (_dtCounter <= _dtStep)
+      return;
 
-      if (isStatic)
-        return;
+    _dtCounter = 0;
 
-      var prevPos = position;
+    var prevPos = position;
 
-      var parentAsWorld:World = cast(parent, World);
-      var accSum = acceleration + parentAsWorld.gravity;
-      if (!isResting)
-        position += velocity * _dtStep + accSum * _dtStep * _dtStep / 2;
-      velocity += accSum * _dtStep;
+    var parentAsWorld:World = cast(parent, World);
+    var accSum = acceleration + parentAsWorld.gravity;
+    if (isResting) {
+      velocity = vec3(0);
+      acceleration = vec3(0);
+      return;
+    }
 
-      if (length(position - prevPos) > eps) {
-        _restingCounter = 0;
-        isResting = false;
-      } else {
-        _restingCounter++;
-        isResting = _restingCounter > 120;
-      }
+    position += velocity * _dtStep + accSum * _dtStep * _dtStep / 2;
+    velocity += accSum * _dtStep;
+
+    if (length(position - prevPos) > eps) {
+      _restingCounter = 0;
+      isResting = false;
+    } else {
+      _restingCounter++;
+      isResting = _restingCounter > 120;
     }
   }
 }

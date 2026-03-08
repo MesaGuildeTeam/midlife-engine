@@ -69,13 +69,13 @@ class World extends Node {
         var prevVelA = childA.velocity;
 
         var normalA = childA.shape.getNormal(childB.position - childA.position);
-        var normalB = childB.shape.getNormal(childB.position - childA.position);
+        var normalB = childB.shape.getNormal(childA.position - childB.position);
 
         if (childA.isStatic) {
           childB.velocity -= (1
             + elasticity) * dot(childB.velocity, normalA) * normalA;
         } else if (childB.isStatic) {
-          childB.velocity -= (1
+          childA.velocity -= (1
             + elasticity) * dot(childA.velocity, normalB) * normalB;
         } else {
           childA.velocity = ((childA.mass - elasticity * childB.mass) * prevVelA
