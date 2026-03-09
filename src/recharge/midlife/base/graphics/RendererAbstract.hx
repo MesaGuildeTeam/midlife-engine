@@ -69,10 +69,16 @@ class RendererAbstract {
       return 0;
     });
 
+    // Call pre-render hook
+    preRender(scene);
+
     // Iterate and clean
     for (i in _renderQueue)
       drawInstruction(i, scene);
     _renderQueue = new Array();
+
+    // Call post-render hook
+    postRender(scene);
   }
 
   /**
@@ -148,5 +154,21 @@ class RendererAbstract {
    */
   function drawInstruction(instruction:RenderInstruction, scene:Scene):Void {
     trace("WARNING: drawInstruction not implemented for this target");
+  }
+
+  /**
+   * Called before the render queue is processed
+   * @param scene 
+   */
+  public function preRender(scene:Scene):Void {
+    // Default implementation does nothing
+  }
+  
+  /**
+   * Called after the render queue is processed
+   * @param scene 
+   */
+  public function postRender(scene:Scene):Void {
+    // Default implementation does nothing
   }
 }

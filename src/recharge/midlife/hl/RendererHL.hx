@@ -19,6 +19,9 @@ class RendererHL extends RendererAbstract {
 
   var _currentBG:Vec3;
 
+  var _buffer:FrameBufferHL;
+  var _bufferShader:ShaderHL;
+
   static inline var stride:Int = 8 * 4;
 
   public function new() {
@@ -76,9 +79,12 @@ class RendererHL extends RendererAbstract {
       GL.vertexAttribPointer(atrNorm, 3, GL.FLOAT, false, stride, 5 * 4);
     }
 
-    // Define vertex attribute space
+    // Define framebuffer parameters 
+    _buffer = new FrameBufferHL();
+    _bufferShader = new ShaderHL('midlife/post.frag', 'midlife/post.vert');
 
     GL.clearColor(0, 0, 0, 1);
+
   }
 
   override public function setBackgroundColor(color:Vec3):Void {
@@ -179,5 +185,48 @@ class RendererHL extends RendererAbstract {
       Bytes.fromBytes(ib16.bytes), GL.DYNAMIC_DRAW);
 
     GL.drawElements(GL.TRIANGLES, ib.length, GL.UNSIGNED_SHORT, 0);
+  }
+
+  override function preRender(scene:Scene):Void {
+    // Bind framebuffer
+    _buffer.bind();
+    GL.viewport(0, 0, 320, 240);
+    GL.enable(GL.DEPTH_TEST);
+    GL.depthFunc(GL.LESS);
+    GL.clear(GL.COLOR_BUFFER_BIT);
+    GL.clear(GL.DEPTH_BUFFER_BIT);
+  }
+  
+  override function postRender(scene:Scene):Void {
+    // Unbind framebuffer
+    _buffer.unbind();
+    GL.viewport(0, 0, GameHL.window.width, GameHL.window.height);
+    GL.clear(GL.COLOR_BUFFER_BIT);
+    GL.clear(GL.DEPTH_BUFFER_BIT);
+
+    // use buffer shader
+    var currentShader:Program = cast _bufferShader.getShaderProgram();
+    GL.useProgram(currentShader);
+
+    // draw fullscreen quad
+    // 3d position
+    // uv
+    // normal
+    var vertices: Array<Float> = [
+      -1, -1, 0, 0, 0, 0, 0, 1, 
+      1, -1, 0, 1, 0, 0, 0, 1, 
+      1, 1, 0, 1, 1, 0, 0, 1, 
+      -1, 1, 0, 0, 1, 0, 0, 1,
+    ];
+    var vertices32 = Float32Array.fromArray(vertices).getData();
+    var indices: Array<Int> = [0, 1, 2, 0, 2, 3];
+    var indices16 = UInt16Array.fromArray(indices).getData();
+    GL.bufferData(GL.ARRAY_BUFFER, vertices32.byteLength, Bytes.fromBytes(vertices32.bytes), GL.DYNAMIC_DRAW);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, indices16.byteLength, Bytes.fromBytes(indices16.bytes), GL.DYNAMIC_DRAW);
+    GL.bindTexture(GL.TEXTURE_2D, _buffer.getTexture());
+    GL.activeTexture(GL.TEXTURE0);
+    GL.bindTexture(GL.TEXTURE0, _buffer.getTexture());
+    GL.drawElements(GL.TRIANGLES, indices.length, GL.UNSIGNED_SHORT, 0);
+
   }
 }

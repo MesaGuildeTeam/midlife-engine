@@ -14,6 +14,8 @@ import haxe.Timer;
 class GameHL extends recharge.midlife.base.GameAbstract {
   static var InputParamMap:Map<Int, Float> = new Map();
 
+  static public var window:Window;
+
   public static function getInstance():recharge.midlife.base.GameAbstract {
     if (recharge.midlife.base.GameAbstract._instance == null)
       recharge.midlife.base.GameAbstract._instance = new GameHL();
@@ -35,7 +37,7 @@ class GameHL extends recharge.midlife.base.GameAbstract {
 
     // Base Resolution: 320x240 like the PS1
     // Still recommend to play at 1280x960 or 640x480
-    var window = new Window(title, 320, 240);
+    window = new Window(title, 320, 240);
     window.renderTo();
 
     if (!GL.init()) {
@@ -88,8 +90,6 @@ class GameHL extends recharge.midlife.base.GameAbstract {
       this.updateScene(dt);
 
       this.drawScene();
-      GL.clear(GL.COLOR_BUFFER_BIT);
-      GL.clear(GL.DEPTH_BUFFER_BIT);
       _renderer.flush(_currentScene);
       window.present();
     }
