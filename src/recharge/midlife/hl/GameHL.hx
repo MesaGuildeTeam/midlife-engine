@@ -43,7 +43,12 @@ class GameHL extends recharge.midlife.base.GameAbstract {
     if (!GL.init()) {
       throw("OpenGL is unavailable");
     }
+
+    #if midlife_deferred
+    _renderer = new RendererDeferredHL();
+    #else
     _renderer = new RendererHL();
+    #end
 
     // Populate InputManager
     InputManager.getInstance().setInput("DPadX", new Input(() -> {
