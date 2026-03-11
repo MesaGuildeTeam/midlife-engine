@@ -34,7 +34,7 @@ class RendererHL extends RendererAbstract {
     GL.enable(GL.CULL_FACE);
     GL.cullFace(GL.BACK);
 
-    //GL.polygonMode(GL.FRONT_AND_BACK, GL.LINE);
+    // GL.polygonMode(GL.FRONT_AND_BACK, GL.LINE);
 
     // Prepare buffers
     _vbo = GL.createBuffer();
@@ -127,7 +127,7 @@ class RendererHL extends RendererAbstract {
 
   override function preRender(scene:Scene):Void {
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
-  } 
+  }
 
   override function drawInstruction(instruction:RenderInstruction,
       scene:Scene) {
@@ -153,8 +153,8 @@ class RendererHL extends RendererAbstract {
     var diffuse:Null<Texture> = instruction.textures.get(TextureSlot.Diffuse);
     if (diffuse != null) {
       // trace("Use texture ID " + diffuse.getTexture());
+      GL.activeTexture(GL.TEXTURE0);
       GL.bindTexture(GL.TEXTURE_2D, cast(diffuse.getTexture(), sdl.Texture));
-      GL.bindTexture(GL.TEXTURE0, cast(diffuse.getTexture(), sdl.Texture));
 
       if (utUniform != null)
         GL.uniform1i(utUniform, 1);
@@ -185,4 +185,3 @@ class RendererHL extends RendererAbstract {
     GL.drawElements(GL.TRIANGLES, ib.length, GL.UNSIGNED_SHORT, 0);
   }
 }
-

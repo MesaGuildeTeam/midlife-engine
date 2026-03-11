@@ -23,8 +23,6 @@
 --resource assets/hl/default.frag@midlife/default.frag
 --resource assets/hl/ui.frag@midlife/ui.frag
 --resource assets/hl/ui.vert@midlife/ui.vert
---resource assets/hl/post.frag@midlife/post.frag
---resource assets/hl/post.vert@midlife/post.vert
 --resource assets/hl/thick_8x8.png@midlife/default_font.png
 
 -p src

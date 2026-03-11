@@ -13,7 +13,6 @@ import recharge.midlife.base.Scene;
 import recharge.midlife.base.graphics.Texture;
 
 class RendererDeferredHL extends RendererHL {
-
   var _buffer:FrameBufferHL;
   var _bufferShader:ShaderHL;
 
@@ -22,7 +21,7 @@ class RendererDeferredHL extends RendererHL {
   public function new() {
     super();
 
-    // Define framebuffer parameters 
+    // Define framebuffer parameters
     _buffer = new FrameBufferHL();
     _bufferShader = new ShaderHL('midlife/post.frag', 'midlife/post.vert');
   }
@@ -37,20 +36,22 @@ class RendererDeferredHL extends RendererHL {
     GL.viewport(0, 0, 320, 240);
     GL.enable(GL.DEPTH_TEST);
     GL.depthFunc(GL.LESS);
+    GL.depthMask(true);
 
-    GL.enable(GL.BLEND);
-    GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
-    GL.enable(GL.CULL_FACE);
-    GL.cullFace(GL.BACK);
+    // GL.enable(GL.BLEND);
+    // GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
+    // GL.enable(GL.CULL_FACE);
+    // GL.cullFace(GL.BACK);
 
-    var buffersArray = haxe.io.UInt32Array.fromArray([GL.COLOR_ATTACHMENT0, 0x8CE1, 0x8CE2]).getData();
+    var buffersArray = haxe.io.UInt32Array.fromArray([GL.COLOR_ATTACHMENT0, 0x8CE1, 0x8CE2])
+      .getData();
     GL.drawBuffers(3, Bytes.fromBytes(buffersArray.bytes));
-    
+
     GL.clearColor(_currentBG.x, _currentBG.y, _currentBG.z, 1);
     GL.clear(GL.COLOR_BUFFER_BIT);
     GL.clear(GL.DEPTH_BUFFER_BIT);
   }
-  
+
   override function postRender(scene:Scene):Void {
     // Unbind framebuffer
     _buffer.unbind();
@@ -78,13 +79,14 @@ class RendererDeferredHL extends RendererHL {
     if (uTex != null) {
       GL.uniform1i(uTex, 0);
     }
-    
+
     var uNormalTex = GL.getUniformLocation(currentShader, "u_NormalTexture");
     if (uNormalTex != null) {
       GL.uniform1i(uNormalTex, 1);
     }
-    
-    var uPositionTex = GL.getUniformLocation(currentShader, "u_PositionTexture");
+
+    var uPositionTex = GL.getUniformLocation(currentShader,
+      "u_PositionTexture");
     if (uPositionTex != null) {
       GL.uniform1i(uPositionTex, 2);
     }
@@ -100,17 +102,19 @@ class RendererDeferredHL extends RendererHL {
     // 3d position
     // uv
     // normal
-    var vertices: Array<Float> = [
-      -1, -1, 0, 0, 0, 0, 0, 1, 
-      1, -1, 0, 1, 0, 0, 0, 1, 
-      1, 1, 0, 1, 1, 0, 0, 1, 
-      -1, 1, 0, 0, 1, 0, 0, 1,
+    var vertices:Array<Float> = [
+      -1, -1, 0, 0, 0, 0, 0, 1,
+       1, -1, 0, 1, 0, 0, 0, 1,
+       1,  1, 0, 1, 1, 0, 0, 1,
+      -1,  1, 0, 0, 1, 0, 0, 1,
     ];
     var vertices32 = Float32Array.fromArray(vertices).getData();
-    var indices: Array<Int> = [0, 1, 2, 0, 2, 3];
+    var indices:Array<Int> = [0, 1, 2, 0, 2, 3];
     var indices16 = UInt16Array.fromArray(indices).getData();
-    GL.bufferData(GL.ARRAY_BUFFER, vertices32.byteLength, Bytes.fromBytes(vertices32.bytes), GL.DYNAMIC_DRAW);
-    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, indices16.byteLength, Bytes.fromBytes(indices16.bytes), GL.DYNAMIC_DRAW);
+    GL.bufferData(GL.ARRAY_BUFFER, vertices32.byteLength,
+      Bytes.fromBytes(vertices32.bytes), GL.DYNAMIC_DRAW);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, indices16.byteLength,
+      Bytes.fromBytes(indices16.bytes), GL.DYNAMIC_DRAW);
     GL.drawElements(GL.TRIANGLES, indices.length, GL.UNSIGNED_SHORT, 0);
   }
 }
