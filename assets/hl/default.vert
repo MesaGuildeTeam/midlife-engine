@@ -22,7 +22,7 @@ void main() {
 
     vec4 screen_pos = u_Camera * u_Transform * vec4(a_Position, 1.0);
 
-    v_CameraDir = normalize((u_Camera * vec4(0.0, 0.0, 1.0, 0.0)).xyz + vec3(screen_pos.xy / screen_pos.z, 0.0));
+    v_CameraDir = normalize((u_Camera * vec4(0.0, 0.0, 1.0, 0.0)).xyz - v_Position);
 
     gl_Position = screen_pos;
 

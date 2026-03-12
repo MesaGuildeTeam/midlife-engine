@@ -8,7 +8,7 @@
 # Add any other required libraries
 
 # Specify platform with target and library
-# This is one example using raylib 
+# This is one example using raylib
 -hl bin/hlboot.dat
 --dce full
 
@@ -21,7 +21,7 @@
 -D midlife-deferred
 
 --resource assets/hl/default.vert@midlife/default.vert
---resource assets/hlDeferred/deferred.frag@midlife/default.frag
+--resource assets/hl/default.frag@midlife/default.frag
 --resource assets/hl/ui.frag@midlife/ui.frag
 --resource assets/hl/ui.vert@midlife/ui.vert
 --resource assets/hlDeferred/post.frag@midlife/post.frag
@@ -29,5 +29,5 @@
 --resource assets/hl/thick_8x8.png@midlife/default_font.png
 
 -p src
---main Examples 
+--main Examples
 --cmd hl bin/hlboot.dat
