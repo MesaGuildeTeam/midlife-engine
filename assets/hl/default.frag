@@ -34,9 +34,9 @@ uniform sampler2D u_Diffuse2;
 uniform int u_usesTexture[2];
 
 uniform vec4 u_DiffuseColor;
+uniform vec4 u_MaterialParams;
 
 #define kd 1.0
-#define ks 0.0
 #define lh 0.5
 
 /**
@@ -62,7 +62,7 @@ vec3 computeDiffuse(vec3 lightPos, vec4 color, vec3 surface) {
 
     vec3 diffuse = lightOnObj 
         * lambert * color.xyz;
-    vec3 fresnel = ks * lightOnObj
+    vec3 fresnel = u_MaterialParams.x * lightOnObj
         * pow(1.0 - max(0.0, dot(normalize(v_Normal), v_CameraDir)), 5.0) * color.xyz;
 
     vec3 result = kd * diffuse * surface;
@@ -78,7 +78,7 @@ vec3 computeSpecular(vec3 lightPos, vec4 color) {
     vec3 halfway = normalize(v_CameraDir + lightPos); 
 
     // Specular with fresnel
-    vec3 specular = ks * lightOnObj 
+    vec3 specular = u_MaterialParams.x * lightOnObj 
         * max(0.0, pow(dot(halfway, normalize(v_Normal)), 100.0)) * color.xyz;
 
     return specular;
