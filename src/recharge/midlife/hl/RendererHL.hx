@@ -171,6 +171,12 @@ class RendererHL extends RendererAbstract {
       GL.uniform4fv(udcUniform, Bytes.fromBytes(v.bytes), 0, 1);
     }
 
+    var usmUniform = GL.getUniformLocation(currentShader, "u_MaterialParams");
+    if (usmUniform != null) {
+      var v = Float32Array.fromArray([instruction.shininess, 0.0, 0.0, 0.0]).getData();
+      GL.uniform4fv(usmUniform, Bytes.fromBytes(v.bytes), 0, 1);
+    }
+
     // Bind and draw mesh with shader
     var vb:Array<Float> = instruction.mesh.getVertices();
     var vb32 = Float32Array.fromArray(vb).getData();

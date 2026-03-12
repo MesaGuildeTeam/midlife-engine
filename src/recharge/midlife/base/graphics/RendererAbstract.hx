@@ -121,6 +121,10 @@ class RendererAbstract {
     _constructingInstruction.diffuseColor = color;
   }
 
+  public function pushShininess(shininess:Float) {
+    _constructingInstruction.shininess = shininess;
+  }
+
   /**
    * simplified the queueing of a single sprite at a given position with a given rotation
    * 
