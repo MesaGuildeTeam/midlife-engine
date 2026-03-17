@@ -9,17 +9,21 @@ class FrameBufferHL {
   public var colorTexture:Texture;
   public var normalTexture:Texture;
   public var positionTexture:Texture;
+  public var specularTexture:Texture;
 
   public function new() {
     // Frame Buffer
     fbo = GL.createFramebuffer();
     GL.bindFramebuffer(GL.FRAMEBUFFER, fbo);
 
+    final width = 320;
+    final height = 240;
+
     // Generate Textures
     colorTexture = GL.createTexture();
     GL.bindTexture(GL.TEXTURE_2D, colorTexture);
-    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB, 320, 240, 0, GL.RGB,
-      GL.UNSIGNED_BYTE, null);
+    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB,
+      GL.FLOAT, null);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
     GL.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0,
@@ -29,7 +33,7 @@ class FrameBufferHL {
 
     normalTexture = GL.createTexture();
     GL.bindTexture(GL.TEXTURE_2D, normalTexture);
-    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, 320, 240, 0, GL.RGB, GL.FLOAT,
+    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB, GL.FLOAT,
       null);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
@@ -40,7 +44,7 @@ class FrameBufferHL {
 
     positionTexture = GL.createTexture();
     GL.bindTexture(GL.TEXTURE_2D, positionTexture);
-    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, 320, 240, 0, GL.RGB, GL.FLOAT,
+    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB, GL.FLOAT,
       null);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
@@ -49,10 +53,21 @@ class FrameBufferHL {
     GL.framebufferTexture2D(GL.FRAMEBUFFER, 0x8CE2, GL.TEXTURE_2D,
       positionTexture, 0);
 
+    specularTexture = GL.createTexture();
+    GL.bindTexture(GL.TEXTURE_2D, specularTexture);
+    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB, GL.FLOAT,
+      null);
+    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
+    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+    GL.framebufferTexture2D(GL.FRAMEBUFFER, 0x8CE3, GL.TEXTURE_2D,
+      specularTexture, 0);
+
     // Render Buffer
     rbo = GL.createRenderbuffer();
     GL.bindRenderbuffer(GL.RENDERBUFFER, rbo);
-    GL.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT16, 320, 240);
+    GL.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT16, width, height);
     GL.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.DEPTH_ATTACHMENT,
       GL.RENDERBUFFER, rbo);
 

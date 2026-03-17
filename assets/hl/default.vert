@@ -1,3 +1,5 @@
+#version 330 core
+
 precision mediump float;
 
 attribute vec3 a_Position;
@@ -12,6 +14,7 @@ varying vec2 v_UV;
 varying vec3 v_Normal;
 varying vec3 v_ScreenNormal;
 varying vec3 v_CameraDir;
+varying vec3 v_CameraPos;
 
 void main() {
     float pixPerUnit = 16.0;
@@ -22,18 +25,19 @@ void main() {
 
     vec4 screen_pos = u_Camera * u_Transform * vec4(a_Position, 1.0);
 
-    v_CameraDir = normalize((u_Camera * vec4(0.0, 0.0, 1.0, 0.0)).xyz - v_Position);
+    v_CameraDir = normalize((u_Camera * vec4(0.0, 0.0, 1.0, 0.0)).xyz);
+    //v_CameraDir = normalize(u_Camera[2].xyz);
 
     gl_Position = screen_pos;
 
     // perspective distance correction and adding depth
-    gl_Position.w = screen_pos.z / (unitZ);
-    gl_Position.z = -log(screen_pos.z + 1.0) / log(60.0 + 1.0);
+    //gl_Position.w = screen_pos.z / (unitZ);
+    gl_Position.z = log(screen_pos.z + 1.0) / log(60.0 + 1.0);
 
     // Correct width to game screen ratio and add screen space
     gl_Position.xy = gl_Position.xy / vec2(160.0, 120.0) * (pixPerUnit);
 
     v_Normal = (u_Transform * vec4(a_Normal, 0.0)).xyz;
-    v_ScreenNormal = (u_Camera * vec4(v_Normal, 0.0)).xyz * vec3(1.0, 1.0, -1.0);
+    v_ScreenNormal = (inverse(u_Camera) * u_Transform * vec4(a_Normal, 0.0)).xyz;
     v_UV = a_UV;
 }

@@ -35,6 +35,7 @@ class RendererHL extends RendererAbstract {
     GL.cullFace(GL.BACK);
 
     // GL.polygonMode(GL.FRONT_AND_BACK, GL.LINE);
+    GL.enable(GL.FRAMEBUFFER_SRGB);
 
     // Prepare buffers
     _vbo = GL.createBuffer();

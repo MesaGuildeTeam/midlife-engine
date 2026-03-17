@@ -43,9 +43,9 @@ class RendererDeferredHL extends RendererHL {
     // GL.enable(GL.CULL_FACE);
     // GL.cullFace(GL.BACK);
 
-    var buffersArray = haxe.io.UInt32Array.fromArray([GL.COLOR_ATTACHMENT0, 0x8CE1, 0x8CE2])
+    var buffersArray = haxe.io.UInt32Array.fromArray([GL.COLOR_ATTACHMENT0, 0x8CE1, 0x8CE2, 0x8CE3])
       .getData();
-    GL.drawBuffers(3, Bytes.fromBytes(buffersArray.bytes));
+    GL.drawBuffers(4, Bytes.fromBytes(buffersArray.bytes));
 
     GL.clearColor(_currentBG.x, _currentBG.y, _currentBG.z, 1);
     GL.clear(GL.COLOR_BUFFER_BIT);
@@ -90,6 +90,11 @@ class RendererDeferredHL extends RendererHL {
     if (uPositionTex != null) {
       GL.uniform1i(uPositionTex, 2);
     }
+    
+    var uSpecularTex = GL.getUniformLocation(currentShader, "u_SpecularTexture");
+    if (uSpecularTex != null) {
+      GL.uniform1i(uSpecularTex, 3);
+    }
 
     GL.activeTexture(GL.TEXTURE0);
     GL.bindTexture(GL.TEXTURE_2D, _buffer.colorTexture);
@@ -97,6 +102,8 @@ class RendererDeferredHL extends RendererHL {
     GL.bindTexture(GL.TEXTURE_2D, _buffer.normalTexture);
     GL.activeTexture(GL.TEXTURE2);
     GL.bindTexture(GL.TEXTURE_2D, _buffer.positionTexture);
+    GL.activeTexture(GL.TEXTURE3);
+    GL.bindTexture(GL.TEXTURE_2D, _buffer.specularTexture);
 
     // draw fullscreen quad
     // 3d position

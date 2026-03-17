@@ -19,6 +19,7 @@ in vec3 v_Position;
 in vec2 v_UV;
 in vec3 v_Normal;
 in vec3 v_CameraDir;
+in vec3 v_ScreenNormal;
 
 // Light Uniforms
 uniform vec4 u_Ambient;
@@ -39,8 +40,10 @@ uniform vec4 u_MaterialParams;
 layout(location = 0) out vec4 gColor;
 layout(location = 1) out vec4 gNormal;
 layout(location = 2) out vec4 gPosition;
+layout(location = 3) out vec4 gSpecular;
 
 #define kd 1.0
+#define ks 1.0
 #define lh 0.5
 
 /**
@@ -61,17 +64,17 @@ vec3 computeDiffuse(vec3 lightPos, vec4 color, vec3 surface) {
     float lambert = dot(normalize(v_Normal), normalize(lightPos));
 
     // Lambertian Wrap. Comment first line below if regular lambert is preferred
-    //lambert = mix((lambert + lh) / (1.0 + lh), lambert, clamp(ks, 0.0, 1.0));
+    lambert = mix((lambert + lh) / (1.0 + lh), lambert, clamp(ks, 0.0, 1.0));
     lambert = max(lambert, 0.0);
 
-    vec3 diffuse = lightOnObj 
-        * lambert * color.xyz;
+    vec3 diffuse = lightOnObj
+            * lambert * color.xyz;
     vec3 fresnel = u_MaterialParams.x * lightOnObj
-        * pow(1.0 - max(0.0, dot(normalize(v_Normal), v_CameraDir)), 5.0) * color.xyz;
+            * pow(1.0 - max(0.0, dot(normalize(v_ScreenNormal), normalize(v_CameraDir))), 5.0) * color.xyz;
 
     vec3 result = kd * diffuse * surface;
     // Enable Fresnel
-    result += (fresnel * length(diffuse + u_Ambient.xyz));
+    //result += (fresnel * 0.5 * length(diffuse + u_Ambient.xyz));
 
     return result;
 }
@@ -82,8 +85,8 @@ vec3 computeSpecular(vec3 lightPos, vec4 color) {
     vec3 halfway = normalize(v_CameraDir + lightPos);
 
     // Specular with fresnel
-    vec3 specular = u_MaterialParams.x * lightOnObj 
-        * max(0.0, pow(dot(halfway, normalize(v_Normal)), 100.0)) * color.xyz;
+    vec3 specular = u_MaterialParams.x * lightOnObj
+            * max(0.0, pow(dot(halfway, normalize(v_Normal)), 50.0)) * color.xyz;
 
     return specular;
 }
@@ -124,9 +127,11 @@ void main() {
     }
 
     // add more color depth by making brighter values than 1 whiter
-    vec3 color_out = desaturate(colorMix.xyz * u_Ambient.xyz + lighting);
+    //vec3 color_out = desaturate(colorMix.xyz * u_Ambient.xyz + lighting);
+    vec3 color_out = colorMix.xyz * u_Ambient.xyz + lighting;
 
     gColor = vec4(color_out, colorMix.a);
     gNormal = vec4(v_Normal, 1.0);
     gPosition = vec4(v_Position, 1.0);
+    gSpecular = vec4(u_MaterialParams.x, 0.0, 0.0, 1.0);
 }

@@ -37,7 +37,7 @@ class GameHL extends recharge.midlife.base.GameAbstract {
 
     // Base Resolution: 320x240 like the PS1
     // Still recommend to play at 1280x960 or 640x480
-    window = new Window(title, 320, 240);
+    window = new Window(title, 640, 480);
     window.renderTo();
 
     if (!GL.init()) {

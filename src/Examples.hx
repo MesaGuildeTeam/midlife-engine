@@ -14,7 +14,7 @@ class ExampleTraverser extends Scene {
   static var registry = NodeFactory.register(ExampleTraverser);
 
   var _examples:Array<String>;
-  var _currentExample:String;
+  var _currentExample:Node;
   var _exampleIndex:Int;
 
   public function new(name:String, ?params:Dynamic) {
@@ -28,8 +28,7 @@ class ExampleTraverser extends Scene {
       removeChild(_currentExample);
 
     trace("Loading example " + name);
-    _currentExample = name;
-    addChild(NodeFactory.create(_currentExample, _currentExample));
+    _currentExample = addChild(NodeFactory.create(name, name));
 
     // These are here because technically we never switch scenes
     lights.clearLights();
