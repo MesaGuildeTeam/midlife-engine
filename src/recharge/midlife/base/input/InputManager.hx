@@ -62,7 +62,7 @@ class InputManager {
 
       return positiveImpulse - negativeImpulse;
     }
-      
+
 
     trace("WARNING: Input " + name + " not found");
     return 0.0;

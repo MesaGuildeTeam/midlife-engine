@@ -34,7 +34,7 @@ class RendererHL extends RendererAbstract {
     GL.enable(GL.CULL_FACE);
     GL.cullFace(GL.BACK);
 
-    //GL.polygonMode(GL.FRONT_AND_BACK, GL.LINE);
+    // GL.polygonMode(GL.FRONT_AND_BACK, GL.LINE);
 
     // Prepare buffers
     _vbo = GL.createBuffer();
@@ -169,7 +169,8 @@ class RendererHL extends RendererAbstract {
 
     var usmUniform = GL.getUniformLocation(currentShader, "u_MaterialParams");
     if (usmUniform != null) {
-      var v = Float32Array.fromArray([instruction.shininess, 0.0, 0.0, 0.0]).getData();
+      var v = Float32Array.fromArray([instruction.shininess, 0.0, 0.0, 0.0])
+        .getData();
       GL.uniform4fv(usmUniform, Bytes.fromBytes(v.bytes), 0, 1);
     }
 

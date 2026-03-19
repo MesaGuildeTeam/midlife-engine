@@ -46,7 +46,7 @@ class RenderInstruction {
  * An abstract renderer interface to give the game developer a workflow to work with
  */
 class RendererAbstract {
-  static var quadMesh:Mesh = new Plane();
+  static var quadMesh:Mesh = new Plane(vec3(0));
 
   var _renderQueue:Array<RenderInstruction>;
   var _constructingInstruction:RenderInstruction;
