@@ -11,12 +11,12 @@
 
 # Generate coverage reports
 -L instrument
---macro instrument.Instrumentation.coverage(['recharge.midlife.base'], ['src'], [])
+--macro instrument.Instrumentation.coverage(['recharge.midlife.base'], ['src/recharge/midlife/'], [])
 #-D coverage-lcov-reporter=tmp/lcov.info
 -D coverage-console-file-summary-reporter
 
 # Run the tests
 --interp
--dce full
 -p src
 -m Tests
+recharge.midlife.base
