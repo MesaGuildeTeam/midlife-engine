@@ -10,7 +10,7 @@ import recharge.midlife.base.graphics.Mesh;
 
 class Plane extends Mesh {
   public function new(?offset:Vec3) {
-    #if !carpengine_coverage
+    #if (!carpengine_coverage && !carpengine_testmode)
     var off = offset == null ? vec3(0, 0, 0) : offset;
     addQuad(new Vertex(vec3(-0.5, -0.5, 0) + off, vec2(0, 1)),
       new Vertex(vec3(0.5, -0.5, 0) + off, vec2(1, 1)),
