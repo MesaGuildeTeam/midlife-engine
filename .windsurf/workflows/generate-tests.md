@@ -1,6 +1,6 @@
 ---
 trigger: generate-tests
-description: Generate test files for files that do not have tests yet
+description: Generate test files for classes that do not have tests yet
 ---
 
 details:
@@ -17,6 +17,7 @@ constraints:
   - "Do not write integration tests"
   - "If a class has a warning trace, do not write tests for it"
   - "Only write tests that are in the specified source folder"
+  - "Ignore testing parameters that are not marked public. If it does not specify, assume it is private"
 instructions:
   - "1. Find all classes in the specified source folder and see if there is a test in the tests folder"
   - "2. If there is no test, generate a test file with the same name but in src/tests/."
