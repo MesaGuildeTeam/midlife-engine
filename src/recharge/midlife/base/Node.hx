@@ -109,10 +109,6 @@ class Node {
     return allChildren;
   }
 
-  // public function removeChild(name:String, index:Int = 0):Void {
-  //   _children[name].splice(index, 1);
-  // }
-
   public function removeChild(obj:Node):Void {
     var name = obj.name;
     if (_children.exists(name)) {

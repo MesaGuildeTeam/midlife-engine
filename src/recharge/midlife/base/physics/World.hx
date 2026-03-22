@@ -34,6 +34,26 @@ class World extends Node {
     return depth;
   }
 
+  /**
+   * Checks if there is an object at the given position.
+   *
+   * @param position The position to check.
+   * @return The object at the position, or null if no object is found.
+   */
+  public function hasObjectAt(position:Vec3):GameObject {
+    var children = getChildren();
+    for (child in children) {
+      if (!Std.isOfType(child, GameObject))
+        continue;
+      var gameObject:GameObject = cast(child, GameObject);
+      var transposedShape = new SDFTransform(gameObject.shape, gameObject.position, gameObject.scale, gameObject.rotation);
+      if (transposedShape.computeDistance(position) < 0.1) {
+        return gameObject;
+      }
+    }
+    return null;
+  }
+
   var _dtCounter:Float = 0;
 
   override public function update(dt:Float):Void {
