@@ -109,8 +109,17 @@ class Node {
     return allChildren;
   }
 
-  public function removeChild(name:String, index:Int = 0):Void {
-    _children[name].splice(index, 1);
+  public function removeChild(obj:Node):Void {
+    var name = obj.name;
+    if (_children.exists(name)) {
+      for (i in 0..._children[name].length) {
+        if (_children[name][i] == obj) {
+          _children[name].splice(i, 1);
+          obj._parent = null;
+          break;
+        }
+      }
+    }
   }
 
   public var enabled(get, set):Bool;
