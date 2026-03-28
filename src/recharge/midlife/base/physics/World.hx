@@ -46,7 +46,8 @@ class World extends Node {
       if (!Std.isOfType(child, GameObject))
         continue;
       var gameObject:GameObject = cast(child, GameObject);
-      var transposedShape = new SDFTransform(gameObject.shape, gameObject.position, gameObject.scale, gameObject.rotation);
+      var transposedShape = new SDFTransform(gameObject.shape,
+        gameObject.position, gameObject.scale, gameObject.rotation);
       if (transposedShape.computeDistance(position) < 0.1) {
         return gameObject;
       }
@@ -110,40 +111,41 @@ class World extends Node {
   }
 
   /**
-    * Computes the new velocity of two colliding objects after a collision.
-    * @param childA The first object involved in the collision.
-    * @param childB The second object involved in the collision.
-    * @param elasticity The coefficient of restitution (bounciness) for the collision.
-    * @param lookahead Whether this is a lookahead calculation (for visualization). In that case, only compute for childA.
-    */
-  public static function computeNewVelocity(childA:GameObject, childB:GameObject, elasticity:Float, lookahead:Bool = false):Void {
-        var prevVelA = childA.velocity;
+   * Computes the new velocity of two colliding objects after a collision.
+   * @param childA The first object involved in the collision.
+   * @param childB The second object involved in the collision.
+   * @param elasticity The coefficient of restitution (bounciness) for the collision.
+   * @param lookahead Whether this is a lookahead calculation (for visualization). In that case, only compute for childA.
+   */
+  public static function computeNewVelocity(childA:GameObject,
+      childB:GameObject, elasticity:Float, lookahead:Bool = false):Void {
+    var prevVelA = childA.velocity;
 
-        var normalA = childA.shape.getNormal(childB.position - childA.position);
-        var normalB = childB.shape.getNormal(childA.position - childB.position);
+    var normalA = childA.shape.getNormal(childB.position - childA.position);
+    var normalB = childB.shape.getNormal(childA.position - childB.position);
     if (childA.isStatic) {
-          if (!lookahead)
-            childB.velocity -= (1
-              + elasticity) * dot(childB.velocity, normalA) * normalA;
-        } else if (childB.isStatic) {
-          childA.velocity -= (1
-            + elasticity) * dot(childA.velocity, normalB) * normalB;
-        } else {
-          childA.velocity = ((childA.mass - elasticity * childB.mass) * prevVelA
-            + (1
-              + elasticity) * childB.mass * childB.velocity) / (childA.mass
-              + childB.mass);
-          if (!lookahead)
-            childB.velocity = ((childB.mass
-              - elasticity * childA.mass) * childB.velocity
-              + (1
-                + elasticity) * childA.mass * prevVelA) / (childA.mass
-                + childB.mass);
+      if (!lookahead)
+        childB.velocity -= (1
+          + elasticity) * dot(childB.velocity, normalA) * normalA;
+    } else if (childB.isStatic) {
+      childA.velocity -= (1
+        + elasticity) * dot(childA.velocity, normalB) * normalB;
+    } else {
+      childA.velocity = ((childA.mass - elasticity * childB.mass) * prevVelA
+        + (1
+          + elasticity) * childB.mass * childB.velocity) / (childA.mass
+          + childB.mass);
+      if (!lookahead)
+        childB.velocity = ((childB.mass
+          - elasticity * childA.mass) * childB.velocity
+          + (1
+            + elasticity) * childA.mass * prevVelA) / (childA.mass +
+            childB.mass);
 
-          childA.velocity = length(childA.velocity) * -normalA;
+      childA.velocity = length(childA.velocity) * -normalA;
 
-          if (!lookahead)
-            childB.velocity = length(childB.velocity) * -normalB;
-        }
+      if (!lookahead)
+        childB.velocity = length(childB.velocity) * -normalB;
+    }
   }
 }
