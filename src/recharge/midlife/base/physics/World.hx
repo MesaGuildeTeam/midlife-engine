@@ -86,31 +86,11 @@ class World extends Node {
         // Compute Collisions
 
         var elasticity:Float = 0.8;
-        var prevVelA = childA.velocity;
+
+        computeNewVelocity(childA, childB, elasticity);
 
         var normalA = childA.shape.getNormal(childB.position - childA.position);
         var normalB = childB.shape.getNormal(childA.position - childB.position);
-
-        if (childA.isStatic) {
-          childB.velocity -= (1
-            + elasticity) * dot(childB.velocity, normalA) * normalA;
-        } else if (childB.isStatic) {
-          childA.velocity -= (1
-            + elasticity) * dot(childA.velocity, normalB) * normalB;
-        } else {
-          childA.velocity = ((childA.mass - elasticity * childB.mass) * prevVelA
-            + (1
-              + elasticity) * childB.mass * childB.velocity) / (childA.mass
-              + childB.mass);
-          childB.velocity = ((childB.mass
-            - elasticity * childA.mass) * childB.velocity
-            + (1
-              + elasticity) * childA.mass * prevVelA) / (childA.mass
-              + childB.mass);
-
-          childA.velocity = length(childA.velocity) * -normalA;
-          childB.velocity = length(childB.velocity) * -normalB;
-        }
 
         // Minor separation to avoid seeping through
         depth = -depth + 0.05;
@@ -127,5 +107,43 @@ class World extends Node {
         childB.onCollision(childA);
       }
     }
+  }
+
+  /**
+    * Computes the new velocity of two colliding objects after a collision.
+    * @param childA The first object involved in the collision.
+    * @param childB The second object involved in the collision.
+    * @param elasticity The coefficient of restitution (bounciness) for the collision.
+    * @param lookahead Whether this is a lookahead calculation (for visualization). In that case, only compute for childA.
+    */
+  public static function computeNewVelocity(childA:GameObject, childB:GameObject, elasticity:Float, lookahead:Bool = false):Void {
+        var prevVelA = childA.velocity;
+
+        var normalA = childA.shape.getNormal(childB.position - childA.position);
+        var normalB = childB.shape.getNormal(childA.position - childB.position);
+    if (childA.isStatic) {
+          if (!lookahead)
+            childB.velocity -= (1
+              + elasticity) * dot(childB.velocity, normalA) * normalA;
+        } else if (childB.isStatic) {
+          childA.velocity -= (1
+            + elasticity) * dot(childA.velocity, normalB) * normalB;
+        } else {
+          childA.velocity = ((childA.mass - elasticity * childB.mass) * prevVelA
+            + (1
+              + elasticity) * childB.mass * childB.velocity) / (childA.mass
+              + childB.mass);
+          if (!lookahead)
+            childB.velocity = ((childB.mass
+              - elasticity * childA.mass) * childB.velocity
+              + (1
+                + elasticity) * childA.mass * prevVelA) / (childA.mass
+                + childB.mass);
+
+          childA.velocity = length(childA.velocity) * -normalA;
+
+          if (!lookahead)
+            childB.velocity = length(childB.velocity) * -normalB;
+        }
   }
 }
