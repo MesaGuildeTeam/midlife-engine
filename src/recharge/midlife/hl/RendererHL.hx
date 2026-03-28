@@ -174,7 +174,8 @@ class RendererHL extends RendererAbstract {
 
     var usmUniform = GL.getUniformLocation(currentShader, "u_MaterialParams");
     if (usmUniform != null) {
-      var v = Float32Array.fromArray([instruction.shininess, 0.0, 0.0, 0.0]).getData();
+      var v = Float32Array.fromArray([instruction.shininess, 0.0, 0.0, 0.0])
+        .getData();
       GL.uniform4fv(usmUniform, Bytes.fromBytes(v.bytes), 0, 1);
     }
 
