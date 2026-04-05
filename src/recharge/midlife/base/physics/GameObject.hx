@@ -85,12 +85,6 @@ class GameObject extends Node {
 
   override public function init() {
     super.init();
-
-    if (parent == null || !(parent is World))
-      return
-        trace("GameObject must be added to a World node to be able to simulate physics.");
-
-    _physicsReady = true;
   }
 
   public override function get_transform():Mat4 {
@@ -107,9 +101,6 @@ class GameObject extends Node {
   }
 
   public function computeKinematics(dt:Float):Void {
-    if (!_physicsReady)
-      return;
-
     if (isStatic || isResting) {
       velocity = vec3(0);
       acceleration = vec3(0);

@@ -59,7 +59,7 @@ class World extends Node {
     super.update(dt);
 
     _dtCounter += dt;
-    static var _dtStep:Float = 0.016 / 2; // 60 FPS
+    static var _dtStep:Float = 0.016 / 4; // 60 FPS
 
     while (_dtCounter >= _dtStep) {
       _dtCounter -= _dtStep;
@@ -73,7 +73,6 @@ class World extends Node {
       if (!Std.isOfType(children[i], GameObject))
         continue;
       var childA:GameObject = cast(children[i], GameObject);
-      childA.computeKinematics(dt);
 
       for (j in i...children.length) {
         if (!Std.isOfType(children[j], GameObject))
@@ -83,22 +82,21 @@ class World extends Node {
         var childB:GameObject = cast(children[j], GameObject);
 
         // Perform Collision Check
+        // TODO: Refactor this to use CCD instead of this discrete check
         var depth:Float = checkCollision(childA, childB);
         if (depth > 0)
           continue;
+
         // Compute Collisions
-
         var elasticity:Float = 0.8;
-
         computeNewVelocity(childA, childB, elasticity);
-
-        var normalA = childA.shape.getNormal(childB.position - childA.position);
-        var normalB = childB.shape.getNormal(childA.position - childB.position);
 
         // Call collision callbacks if available
         childA.onCollision(childB);
         childB.onCollision(childA);
       }
+
+      childA.computeKinematics(dt);
     }
   }
 
