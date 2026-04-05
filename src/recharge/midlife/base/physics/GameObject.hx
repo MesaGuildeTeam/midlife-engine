@@ -51,7 +51,6 @@ class GameObject extends Node {
 
   public var shape:SDF;
 
-  var _dtCounter:Float = 0;
   var _physicsReady:Bool = false;
 
   static var _dtStep:Float = 0.016; // 60 FPS
@@ -105,29 +104,22 @@ class GameObject extends Node {
 
   override public function update(dt:Float):Void {
     super.update(dt);
+  }
 
+  public function computeKinematics(dt:Float):Void {
     if (!_physicsReady)
       return;
 
-    if (isStatic)
+    if (isStatic || isResting) {
+      velocity = vec3(0);
+      acceleration = vec3(0);
       return;
-
-    _dtCounter += dt;
-
-    if (_dtCounter <= _dtStep)
-      return;
-
-    _dtCounter = 0;
+    }
 
     var prevPos = position;
 
     var parentAsWorld:World = cast(parent, World);
     var accSum = acceleration + parentAsWorld.gravity;
-    if (isResting) {
-      velocity = vec3(0);
-      acceleration = vec3(0);
-      return;
-    }
 
     position += velocity * _dtStep + accSum * _dtStep * _dtStep / 2;
     velocity += accSum * _dtStep;

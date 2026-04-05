@@ -21,7 +21,7 @@ class World extends Node {
     }
   }
 
-  function checkCollision(a:GameObject, b:GameObject):Float {
+  public static function checkCollision(a:GameObject, b:GameObject):Float {
     var shapeA = new SDFTransform(a.shape, a.position, a.scale, a.rotation);
     var shapeB = new SDFTransform(b.shape, b.position, b.scale, b.rotation);
 
@@ -40,15 +40,13 @@ class World extends Node {
    * @param position The position to check.
    * @return The object at the position, or null if no object is found.
    */
-  public function hasObjectAt(position:Vec3):GameObject {
+  public function hasObjectAt(refObject:GameObject):GameObject {
     var children = getChildren();
     for (child in children) {
       if (!Std.isOfType(child, GameObject))
         continue;
       var gameObject:GameObject = cast(child, GameObject);
-      var transposedShape = new SDFTransform(gameObject.shape,
-        gameObject.position, gameObject.scale, gameObject.rotation);
-      if (transposedShape.computeDistance(position) < 0.1) {
+      if (checkCollision(refObject, gameObject) < 0.0) {
         return gameObject;
       }
     }
@@ -61,17 +59,21 @@ class World extends Node {
     super.update(dt);
 
     _dtCounter += dt;
-    static var _dtStep:Float = 0.016; // 60 FPS
+    static var _dtStep:Float = 0.016 / 2; // 60 FPS
 
-    if (_dtCounter <= _dtStep)
-      return;
+    while (_dtCounter >= _dtStep) {
+      _dtCounter -= _dtStep;
+      iteratePhysics(_dtStep);
+    }
+  }
 
-    _dtCounter = 0;
+  function iteratePhysics(dt:Float):Void {
     var children = getChildren();
     for (i in 0...children.length) {
       if (!Std.isOfType(children[i], GameObject))
         continue;
       var childA:GameObject = cast(children[i], GameObject);
+      childA.computeKinematics(dt);
 
       for (j in i...children.length) {
         if (!Std.isOfType(children[j], GameObject))
@@ -93,16 +95,6 @@ class World extends Node {
         var normalA = childA.shape.getNormal(childB.position - childA.position);
         var normalB = childB.shape.getNormal(childA.position - childB.position);
 
-        // Minor separation to avoid seeping through
-        depth = -depth + 0.05;
-        if (!childA.isStatic)
-          childA.position += normalB * depth * childA.mass / (childA.mass
-            + childB.mass);
-
-        if (!childB.isStatic)
-          childB.position += normalA * depth * childB.mass / (childA.mass
-            + childB.mass);
-
         // Call collision callbacks if available
         childA.onCollision(childB);
         childB.onCollision(childA);
@@ -115,7 +107,7 @@ class World extends Node {
    * @param childA The first object involved in the collision.
    * @param childB The second object involved in the collision.
    * @param elasticity The coefficient of restitution (bounciness) for the collision.
-   * @param lookahead Whether this is a lookahead calculation (for visualization). In that case, only compute for childA.
+   * @param lookahead Whether this is a lookahead calculation (for visualization). In that case, only iterate childA.
    */
   public static function computeNewVelocity(childA:GameObject,
       childB:GameObject, elasticity:Float, lookahead:Bool = false):Void {
@@ -147,5 +139,16 @@ class World extends Node {
       if (!lookahead)
         childB.velocity = length(childB.velocity) * -normalB;
     }
+
+    // Minor separation to avoid seeping through
+    var depth = checkCollision(childA, childB);
+    depth = -depth + 0.05;
+    if (!childA.isStatic)
+      childA.position += normalB * depth * childA.mass / (childA.mass
+        + childB.mass);
+
+    if (!childB.isStatic && !lookahead)
+      childB.position += normalA * depth * childB.mass / (childA.mass
+        + childB.mass);
   }
 }
