@@ -20,11 +20,12 @@ void main() {
     v_Position = position.xyz;
     v_CameraDir = normalize((u_Camera * vec4(0.0, 0.0, 1.0, 0.0)).xyz + vec3(v_Position.xy / v_Position.z, 0.0));
 
-    gl_Position = u_Camera * position;
+    vec4 screen_pos = u_Camera * position;
+    gl_Position = screen_pos;
 
     // perspective distance correction and adding depth
-    gl_Position.w = position.z / (unitZ);
-    gl_Position.z = log(position.z + 1.0) / log(60.0 + 1.0) * 2.0 - 1.0;
+    gl_Position.w = screen_pos.z / (unitZ);
+    gl_Position.z = log(screen_pos.z + 1.0) / log(60.0 + 1.0) * 2.0 - 1.0;
 
     // Correct width to game screen ratio and add screen space
     gl_Position.xy = gl_Position.xy / vec2(160.0, 120.0) * (pixPerUnit);

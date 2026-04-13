@@ -21,7 +21,7 @@ class World extends Node {
     }
   }
 
-  function checkCollision(a:GameObject, b:GameObject):Float {
+  public static function checkCollision(a:GameObject, b:GameObject):Float {
     var shapeA = new SDFTransform(a.shape, a.position, a.scale, a.rotation);
     var shapeB = new SDFTransform(b.shape, b.position, b.scale, b.rotation);
 
@@ -34,78 +34,122 @@ class World extends Node {
     return depth;
   }
 
+  /**
+   * Checks if there is an object at the given position.
+   *
+   * @param position The position to check.
+   * @return The object at the position, or null if no object is found.
+   */
+  public function hasObjectAt(refObject:GameObject):GameObject {
+    var children = getChildren();
+    for (child in children) {
+      if (!Std.isOfType(child, GameObject))
+        continue;
+      var gameObject:GameObject = cast(child, GameObject);
+      if (checkCollision(refObject, gameObject) < 0.0) {
+        return gameObject;
+      }
+    }
+    return null;
+  }
+
   var _dtCounter:Float = 0;
 
   override public function update(dt:Float):Void {
     super.update(dt);
 
     _dtCounter += dt;
-    static var _dtStep:Float = 0.016; // 60 FPS
+    static var _dtStep:Float = 0.016 / 2; // 60 FPS
 
-    if (_dtCounter <= _dtStep)
-      return;
+    while (_dtCounter >= _dtStep) {
+      _dtCounter -= _dtStep;
+      iteratePhysics(_dtStep);
+    }
+  }
 
-    _dtCounter = 0;
-    var children = getChildren();
-    for (i in 0...children.length) {
-      if (!Std.isOfType(children[i], GameObject))
+  function iteratePhysics(dt:Float):Void {
+    var gameObjects:Array<GameObject> = [];
+
+    for (child in getChildren()) {
+      if (!Std.isOfType(child, GameObject))
         continue;
-      var childA:GameObject = cast(children[i], GameObject);
+      gameObjects.push(cast(child, GameObject));
+    }
 
-      for (j in i...children.length) {
-        if (!Std.isOfType(children[j], GameObject))
-          continue;
+    for (i in 0...gameObjects.length) {
+      var childA:GameObject = gameObjects[i];
+
+      for (j in i...gameObjects.length) {
         if (i == j)
           continue;
-        var childB:GameObject = cast(children[j], GameObject);
+        var childB:GameObject = gameObjects[j];
 
         // Perform Collision Check
+        // TODO: Refactor this to use CCD instead of this discrete check
         var depth:Float = checkCollision(childA, childB);
         if (depth > 0)
           continue;
+
         // Compute Collisions
-
         var elasticity:Float = 0.8;
-        var prevVelA = childA.velocity;
-
-        var normalA = childA.shape.getNormal(childB.position - childA.position);
-        var normalB = childB.shape.getNormal(childB.position - childA.position);
-
-        if (childA.isStatic) {
-          childB.velocity -= (1
-            + elasticity) * dot(childB.velocity, normalA) * normalA;
-        } else if (childB.isStatic) {
-          childB.velocity -= (1
-            + elasticity) * dot(childA.velocity, normalB) * normalB;
-        } else {
-          childA.velocity = ((childA.mass - elasticity * childB.mass) * prevVelA
-            + (1
-              + elasticity) * childB.mass * childB.velocity) / (childA.mass
-              + childB.mass);
-          childB.velocity = ((childB.mass
-            - elasticity * childA.mass) * childB.velocity
-            + (1
-              + elasticity) * childA.mass * prevVelA) / (childA.mass
-              + childB.mass);
-
-          childA.velocity = length(childA.velocity) * -normalA;
-          childB.velocity = length(childB.velocity) * -normalB;
-        }
-
-        // Minor separation to avoid seeping through
-        depth = -depth + 0.05;
-        if (!childA.isStatic)
-          childA.position += normalB * depth * childA.mass / (childA.mass
-            + childB.mass);
-
-        if (!childB.isStatic)
-          childB.position += normalA * depth * childB.mass / (childA.mass
-            + childB.mass);
+        computeNewVelocity(childA, childB, elasticity);
 
         // Call collision callbacks if available
         childA.onCollision(childB);
         childB.onCollision(childA);
       }
+
+      childA.computeKinematics(dt);
     }
+  }
+
+  /**
+   * Computes the new velocity of two colliding objects after a collision.
+   * @param childA The first object involved in the collision.
+   * @param childB The second object involved in the collision.
+   * @param elasticity The coefficient of restitution (bounciness) for the collision.
+   * @param lookahead Whether this is a lookahead calculation (for visualization). In that case, only iterate childA.
+   */
+  public static function computeNewVelocity(childA:GameObject,
+      childB:GameObject, elasticity:Float, lookahead:Bool = false):Void {
+    var prevVelA = childA.velocity;
+
+    var normalA = childA.shape.getNormal(childB.position - childA.position);
+    var normalB = childB.shape.getNormal(childA.position - childB.position);
+    if (childA.isStatic) {
+      if (!lookahead)
+        childB.velocity -= (1
+          + elasticity) * dot(childB.velocity, normalA) * normalA;
+    } else if (childB.isStatic) {
+      childA.velocity -= (1
+        + elasticity) * dot(childA.velocity, normalB) * normalB;
+    } else {
+      childA.velocity = ((childA.mass - elasticity * childB.mass) * prevVelA
+        + (1
+          + elasticity) * childB.mass * childB.velocity) / (childA.mass
+          + childB.mass);
+      if (!lookahead)
+        childB.velocity = ((childB.mass
+          - elasticity * childA.mass) * childB.velocity
+          + (1
+            + elasticity) * childA.mass * prevVelA) / (childA.mass +
+            childB.mass);
+
+      childA.velocity = length(childA.velocity) * -normalA;
+
+      if (!lookahead)
+        childB.velocity = length(childB.velocity) * -normalB;
+    }
+
+    // Minor separation to avoid seeping through
+    var depth = checkCollision(childA, childB);
+    depth = -depth + 0.05;
+    if (!childA.isStatic)
+      childA.position += normalB * depth * childA.mass / (childA.mass
+        + childB.mass);
+
+    if (!childB.isStatic && !lookahead)
+      childB.position += normalA * depth * childB.mass / (childA.mass
+        + childB.mass);
   }
 }

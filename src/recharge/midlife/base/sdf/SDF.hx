@@ -21,7 +21,7 @@ class SDFAbstract {
   }
 
   /**
-   * Takes a point 
+   * Takes a point
    */
   inline public function getClosestPoint(point:Vec3):Vec3 {
     var dist = computeDistance(point);
@@ -32,7 +32,7 @@ class SDFAbstract {
 
   /**
    * Computes the normal vector of the SDF
-   * 
+   *
    * If there is no pre-defined gradient function for the SDF type, the normal is approximated
    * @param point the position to compute the SDF at
    * @return Vec3 the normal vector computed
@@ -100,11 +100,11 @@ class SphereSDF extends SDFAbstract {
   }
 
   override public function getTopLeft():Vec3 {
-    return _pos - vec3(_radius + 0.5);
+    return _pos - vec3(_radius + 0.1);
   }
 
   override public function getBottomRight():Vec3 {
-    return _pos + vec3(_radius + 0.5);
+    return _pos + vec3(_radius + 0.1);
   }
 }
 

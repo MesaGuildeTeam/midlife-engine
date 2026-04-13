@@ -15,7 +15,7 @@ class GameObject extends Node {
   public var _velocity:Vec3;
   public var _acceleration:Vec3;
 
-  static inline var eps = 0.05;
+  static inline var eps = 0.03;
 
   public var velocity(get, set):Vec3;
   public var acceleration(get, set):Vec3;
@@ -26,7 +26,9 @@ class GameObject extends Node {
 
   public function set_velocity(v:Vec3):Vec3 {
     _velocity = v;
-    isResting = false;
+
+    if (length(v) > 9)
+      isResting = false;
 
     return _velocity;
   }
@@ -37,7 +39,8 @@ class GameObject extends Node {
 
   public function set_acceleration(a:Vec3):Vec3 {
     _acceleration = a;
-    isResting = false;
+    if (length(a) > 9)
+      isResting = false;
 
     return _acceleration;
   }
@@ -50,7 +53,6 @@ class GameObject extends Node {
 
   public var shape:SDF;
 
-  var _dtCounter:Float = 0;
   var _physicsReady:Bool = false;
 
   static var _dtStep:Float = 0.016; // 60 FPS
@@ -85,12 +87,6 @@ class GameObject extends Node {
 
   override public function init() {
     super.init();
-
-    if (parent == null || !(parent is World))
-      return
-        trace("GameObject must be added to a World node to be able to simulate physics.");
-
-    _physicsReady = true;
   }
 
   public override function get_transform():Mat4 {
@@ -104,33 +100,30 @@ class GameObject extends Node {
 
   override public function update(dt:Float):Void {
     super.update(dt);
+  }
 
-    if (!_physicsReady)
+  public function computeKinematics(dt:Float):Void {
+    var prevPos = position;
+
+    var parentAsWorld:World = cast(parent, World);
+    var accSum = acceleration + parentAsWorld.gravity;
+
+    if (isStatic || isResting) {
+      acceleration = vec3(0);
+      velocity = vec3(0);
       return;
+    }
 
-    _dtCounter += dt;
+    position += velocity * _dtStep + accSum * _dtStep * _dtStep / 2;
+    velocity += accSum * _dtStep;
+    
 
-    while (_dtCounter >= _dtStep) {
-      _dtCounter = 0;
-
-      if (isStatic)
-        return;
-
-      var prevPos = position;
-
-      var parentAsWorld:World = cast(parent, World);
-      var accSum = acceleration + parentAsWorld.gravity;
-      if (!isResting)
-        position += velocity * _dtStep + accSum * _dtStep * _dtStep / 2;
-      velocity += accSum * _dtStep;
-
-      if (length(position - prevPos) > eps) {
-        _restingCounter = 0;
-        isResting = false;
-      } else {
-        _restingCounter++;
-        isResting = _restingCounter > 120;
-      }
+    if (length(position - prevPos) > eps) {
+      _restingCounter = 0;
+      isResting = false;
+    } else {
+      _restingCounter++;
+      isResting = _restingCounter > 120;
     }
   }
 }
