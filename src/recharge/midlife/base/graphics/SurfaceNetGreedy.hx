@@ -5,29 +5,39 @@ import recharge.midlife.base.graphics.Mesh.Vertex;
 import recharge.midlife.base.sdf.SDF;
 import recharge.midlife.base.graphics.Mesh;
 
-// This mesh generation algorithm is very naive at the moment. Although the mesh
-// is very precise in shape, the first optimization that should be taken is to
-// find how to reduce the vertex count by merging adjacent faces together.
+// This mesh generation algorithm has unfortunately been AI generated.
+// It is officially our best mesh generation algorithm for now because it knows
+// how to be precise with what data it needs to generate smooth SDFs, but it
+// unfortunately needs refactoring to be human readable and maintainable.
 //
-// The goal would be to replace the sampling step with an octree-based structure.
-// This may potentially get more expensive to generate, but would allow for much
-// more efficient meshes and would be necessary for larger SDFs.
-//
-// This is not a priority at the moment for the game prototype, but maps may get
-// more expensive to render as the game grows, so this is something to keep in
-// mind for the future.
+// If we can do so, we should be able to optimize this algorithm to use
+// Octree sampling when possible. Otherwise, I hope that this algorithm gets
+// refactored sooner than later.
 // - Roberto Selles
 
 /**
  * Represents a single face in the 2D mask for a given slice.
  * `exists` means there's a boundary here, `flipped` tracks winding order.
  */
-typedef MaskCell = {exists:Bool, flipped:Bool};
+typedef MaskCell = {exists:Bool, flipped:Bool, normal:Vec3};
 
 /**
  * Creates a new mesh based on an SDF using surface nets that can be used for graphical rendering
  */
 class SurfaceNetGreedy extends Mesh {
+  private static inline var DEFAULT_NORMAL_ERROR_THRESHOLD:Float = 0.001;
+  private var _normalErrorThreshold:Float;
+  /**
+   * Compares two normal vectors to determine if they are similar enough
+   * @param n1 First normal vector
+   * @param n2 Second normal vector
+   * @return True if normals are within error threshold
+   */
+  inline function normalsSimilar(n1:Vec3, n2:Vec3):Bool {
+    var dot = VectorMath.dot(n1, n2);
+    return dot >= (1.0 - _normalErrorThreshold);
+  }
+
   /**
    * Takes the 4 corners of a voxel face and creates a quad for the mesh based on the SDF
    *
@@ -64,10 +74,10 @@ class SurfaceNetGreedy extends Mesh {
    * axis: 0=X, 1=Y, 2=Z
    */
   function buildMask(samples:haxe.ds.Vector<Bool>, res:Int, axis:Int,
-      d:Int):Array<MaskCell> {
+      d:Int, sdf:SDF, topLeft:Vec3, dt:Vec3):Array<MaskCell> {
     var mask:Array<MaskCell> = [];
     for (i in 0...res * res)
-      mask.push({exists: false, flipped: false});
+      mask.push({exists: false, flipped: false, normal: vec3(0, 0, 1)});
 
     for (v in 0...res) {
       for (u in 0...res) {
@@ -112,9 +122,15 @@ class SurfaceNetGreedy extends Mesh {
 
         var idx = v * res + u;
         if (a && !b) {
-          mask[idx] = {exists: true, flipped: false};
+          // Calculate position for normal
+          var pos:Vec3 = topLeft + dt * vec3(ix0, iy0, iz0);
+          var normal = sdf.getNormal(pos);
+          mask[idx] = {exists: true, flipped: false, normal: normal};
         } else if (!a && b) {
-          mask[idx] = {exists: true, flipped: true};
+          // Calculate position for normal
+          var pos:Vec3 = topLeft + dt * vec3(ix1, iy1, iz1);
+          var normal = sdf.getNormal(pos);
+          mask[idx] = {exists: true, flipped: true, normal: normal};
         }
       }
     }
@@ -144,6 +160,8 @@ class SurfaceNetGreedy extends Mesh {
           var next = mask[v * res + (u + w)];
           if (!next.exists || next.flipped != cell.flipped)
             break;
+          if (!normalsSimilar(cell.normal, next.normal))
+            break;
           w++;
         }
 
@@ -154,6 +172,10 @@ class SurfaceNetGreedy extends Mesh {
           for (du in 0...w) {
             var c = mask[(v + h) * res + (u + du)];
             if (!c.exists || c.flipped != cell.flipped) {
+              canExpand = false;
+              break;
+            }
+            if (!normalsSimilar(cell.normal, c.normal)) {
               canExpand = false;
               break;
             }
@@ -196,7 +218,7 @@ class SurfaceNetGreedy extends Mesh {
         // --- Clear consumed cells ---
         for (dh in 0...h)
           for (dw in 0...w)
-            mask[(v + dh) * res + (u + dw)] = {exists: false, flipped: false};
+            mask[(v + dh) * res + (u + dw)] = {exists: false, flipped: false, normal: vec3(0, 0, 1)};
 
         u += w;
       }
@@ -208,6 +230,7 @@ class SurfaceNetGreedy extends Mesh {
     var topLeft = tl != null ? tl : sdf.getTopLeft();
     var totalDistance = (br != null ? br : sdf.getBottomRight()) - topLeft;
     res = res != null ? res : 16;
+    _normalErrorThreshold = DEFAULT_NORMAL_ERROR_THRESHOLD;
 
     var dt:Vec3 = totalDistance / vec3(res);
 
@@ -231,11 +254,9 @@ class SurfaceNetGreedy extends Mesh {
     // Greedy Meshed Generation
     for (axis in 0...3) {
       for (d in 0...res - 1) {
-        var mask = buildMask(sampleDistance, res, axis, d);
+        var mask = buildMask(sampleDistance, res, axis, d, sdf, topLeft, dt);
         greedyMerge(mask, res, axis, d, topLeft, dt, sdf);
       }
     }
   }
 }
-
-typedef SurfaceNet = SurfaceNetGreedy;
