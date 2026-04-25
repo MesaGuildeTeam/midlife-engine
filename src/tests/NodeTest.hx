@@ -38,7 +38,7 @@ class NodeTest extends utest.Test {
     Assert.equals(child, childRef);
 
     // test Node.removeChild but make sure child still exists
-    node.removeChild("Child Node");
+    node.removeChild(child);
     Assert.equals(null, node.getChild("Child Node"));
     Assert.equals(child, childRef);
   }
@@ -64,7 +64,7 @@ class NodeTest extends utest.Test {
     Assert.notEquals(child1, child2);
 
     // Remove child2
-    node.removeChild("Child Node", 1);
+    node.removeChild(child2);
     Assert.equals(1, node.getChildren("Child Node").length);
     Assert.equals(child1, node.getChildren("Child Node")[0]);
   }

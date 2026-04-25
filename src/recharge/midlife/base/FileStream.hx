@@ -7,7 +7,6 @@ import sys.io.File;
 #end
 
 import haxe.io.Bytes;
-
 import haxe.Resource;
 
 enum FileMode {
@@ -28,6 +27,7 @@ class FileStream {
 
   public function new(mode:FileMode, ?path:String) {
     _mode = mode;
+    _path = path != null ? path : "";
     if (path != null) {
       open(path);
     }
@@ -62,6 +62,21 @@ class FileStream {
     #end
 
     return false;
+  }
+
+  public var fileName(get, null):String;
+  private function get_fileName():String {
+
+    var name:String = _path.substring(_path.lastIndexOf("/") + 1);
+    return name;
+  }
+
+  public var fileDirectory(get, null):String;
+  private function get_fileDirectory():String {
+    // TODO: Implement path resolution logic
+    
+    var directory:String = _path.substring(0, _path.lastIndexOf("/"));
+    return directory;
   }
 
   public function getDataString():String {

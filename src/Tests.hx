@@ -5,6 +5,7 @@ import utest.ui.Report;
 class Tests {
   public static function main():Void {
     var testRunner = new Runner();
+    testRunner.addCase(new tests.FileStreamTest());
     testRunner.addCase(new tests.NodeTest());
     testRunner.addCase(new tests.UtilsTests());
     testRunner.addCase(new tests.InputTest());
