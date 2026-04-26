@@ -27,7 +27,7 @@ class GameObject extends Node {
   public function set_velocity(v:Vec3):Vec3 {
     _velocity = v;
 
-    if (length(v) > 9.81)
+    if (length(v) > 9)
       isResting = false;
 
     return _velocity;
@@ -39,6 +39,8 @@ class GameObject extends Node {
 
   public function set_acceleration(a:Vec3):Vec3 {
     _acceleration = a;
+    if (length(a) > 9)
+      isResting = false;
 
     return _acceleration;
   }
@@ -101,19 +103,20 @@ class GameObject extends Node {
   }
 
   public function computeKinematics(dt:Float):Void {
-    if (isStatic || isResting) {
-      velocity = vec3(0);
-      acceleration = vec3(0);
-      return;
-    }
-
     var prevPos = position;
 
     var parentAsWorld:World = cast(parent, World);
     var accSum = acceleration + parentAsWorld.gravity;
 
+    if (isStatic || isResting) {
+      acceleration = vec3(0);
+      velocity = vec3(0);
+      return;
+    }
+
     position += velocity * _dtStep + accSum * _dtStep * _dtStep / 2;
     velocity += accSum * _dtStep;
+    
 
     if (length(position - prevPos) > eps) {
       _restingCounter = 0;

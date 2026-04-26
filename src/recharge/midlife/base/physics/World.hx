@@ -59,7 +59,7 @@ class World extends Node {
     super.update(dt);
 
     _dtCounter += dt;
-    static var _dtStep:Float = 0.016 / 4; // 60 FPS
+    static var _dtStep:Float = 0.016 / 2; // 60 FPS
 
     while (_dtCounter >= _dtStep) {
       _dtCounter -= _dtStep;
@@ -68,18 +68,21 @@ class World extends Node {
   }
 
   function iteratePhysics(dt:Float):Void {
-    var children = getChildren();
-    for (i in 0...children.length) {
-      if (!Std.isOfType(children[i], GameObject))
-        continue;
-      var childA:GameObject = cast(children[i], GameObject);
+    var gameObjects:Array<GameObject> = [];
 
-      for (j in i...children.length) {
-        if (!Std.isOfType(children[j], GameObject))
-          continue;
+    for (child in getChildren()) {
+      if (!Std.isOfType(child, GameObject))
+        continue;
+      gameObjects.push(cast(child, GameObject));
+    }
+
+    for (i in 0...gameObjects.length) {
+      var childA:GameObject = gameObjects[i];
+
+      for (j in i...gameObjects.length) {
         if (i == j)
           continue;
-        var childB:GameObject = cast(children[j], GameObject);
+        var childB:GameObject = gameObjects[j];
 
         // Perform Collision Check
         // TODO: Refactor this to use CCD instead of this discrete check
