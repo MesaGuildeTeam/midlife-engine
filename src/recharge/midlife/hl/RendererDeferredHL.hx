@@ -63,6 +63,7 @@ class RendererDeferredHL extends RendererHL {
     // use buffer shader
     var currentShader:Program = cast _bufferShader.getShaderProgram();
     GL.useProgram(currentShader);
+    assignSceneUniforms(currentShader, scene);
 
     // camera just in case
     var camPos = GL.getUniformLocation(currentShader, "u_Camera");

@@ -10,6 +10,7 @@ import sdl.GL;
 import recharge.midlife.base.graphics.RendererAbstract.RenderInstruction;
 import recharge.midlife.base.graphics.RendererAbstract;
 import recharge.midlife.base.Scene;
+import recharge.midlife.base.graphics.Shader;
 import recharge.midlife.base.graphics.Texture;
 
 class RendererHL extends RendererAbstract {
@@ -130,30 +131,35 @@ class RendererHL extends RendererAbstract {
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
   }
 
+  var currentShader:Shader = null;
+
   override function drawInstruction(instruction:RenderInstruction,
       scene:Scene) {
-    // Assign shader
-    var currentShader:Program = cast instruction.shader.getShaderProgram();
-    // trace("Using shader program ID " + currentShader);
-    GL.useProgram(currentShader);
-
-    // assign scene uniforms
-    assignSceneUniforms(currentShader, scene);
-
+   
+    var shader:Program = cast(instruction.shader.getShaderProgram(), Program);
+   
+    // TODO: Figure out this impulse condition to figure out how to optimize
+    // Shader Switching
+    
+    // if (currentShader == null || currentShader != instruction.shader) {
+      GL.useProgram(shader);
+      currentShader = instruction.shader;
+      assignSceneUniforms(shader, scene);
+    // }
+    
     // Material Uniforms
     var tfArray:Array<Float> = new Array();
     instruction.transformation.copyIntoArray(tfArray, 0);
     var tf32 = Float32Array.fromArray(tfArray).getData();
 
-    var tfUniform = GL.getUniformLocation(currentShader, "u_Transform");
+    var tfUniform = GL.getUniformLocation(shader, "u_Transform");
     if (tfUniform != null)
       GL.uniformMatrix4fv(tfUniform, false, Bytes.fromBytes(tf32.bytes), 0, 1);
 
     // Textures
-    var utUniform = GL.getUniformLocation(currentShader, "u_usesTexture");
+    var utUniform = GL.getUniformLocation(shader, "u_usesTexture");
     var diffuse:Null<Texture> = instruction.textures.get(TextureSlot.Diffuse);
     if (diffuse != null) {
-      // trace("Use texture ID " + diffuse.getTexture());
       GL.activeTexture(GL.TEXTURE0);
       GL.bindTexture(GL.TEXTURE_2D, cast(diffuse.getTexture(), sdl.Texture));
 
@@ -164,7 +170,47 @@ class RendererHL extends RendererAbstract {
         GL.uniform1i(utUniform, 0);
     }
 
-    var udcUniform = GL.getUniformLocation(currentShader, "u_DiffuseColor");
+    var diffuse2:Null<Texture> = instruction.textures.get(TextureSlot.Diffuse2);
+    utUniform = GL.getUniformLocation(shader, "u_usesTexture2");
+    if (diffuse2 != null) {
+      GL.activeTexture(GL.TEXTURE1);
+      GL.bindTexture(GL.TEXTURE_2D, cast(diffuse2.getTexture(), sdl.Texture));
+
+      if (utUniform != null)
+        GL.uniform1i(utUniform, 1);
+    } else {
+      if (utUniform != null)
+        GL.uniform1i(utUniform, 0);
+    }
+
+    var specular:Null<Texture> = instruction.textures.get(TextureSlot.Specular);
+    utUniform = GL.getUniformLocation(shader, "u_usesTexture3");
+    if (specular != null) {
+      GL.activeTexture(GL.TEXTURE2);
+      GL.bindTexture(GL.TEXTURE_2D, cast(specular.getTexture(), sdl.Texture));
+
+      if (utUniform != null)
+        GL.uniform1i(utUniform, 1);
+    } else {
+      if (utUniform != null)
+        GL.uniform1i(utUniform, 0);
+    }
+
+    var normal:Null<Texture> = instruction.textures.get(TextureSlot.Normal);
+    utUniform = GL.getUniformLocation(shader, "u_usesTexture4");
+    if (normal != null) {
+      GL.activeTexture(GL.TEXTURE3);
+      GL.bindTexture(GL.TEXTURE_2D, cast(normal.getTexture(), sdl.Texture));
+
+      if (utUniform != null)
+        GL.uniform1i(utUniform, 1);
+    } else {
+      if (utUniform != null)
+        GL.uniform1i(utUniform, 0);
+    }
+
+    // Material Constants
+    var udcUniform = GL.getUniformLocation(shader, "u_DiffuseColor");
     if (udcUniform != null) {
       var c = instruction.diffuseColor != null ? instruction.diffuseColor : vec4(1,
         1, 1, 1);
@@ -172,7 +218,7 @@ class RendererHL extends RendererAbstract {
       GL.uniform4fv(udcUniform, Bytes.fromBytes(v.bytes), 0, 1);
     }
 
-    var usmUniform = GL.getUniformLocation(currentShader, "u_MaterialParams");
+    var usmUniform = GL.getUniformLocation(shader, "u_MaterialParams");
     if (usmUniform != null) {
       var v = Float32Array.fromArray([instruction.shininess, 0.0, 0.0, 0.0])
         .getData();
