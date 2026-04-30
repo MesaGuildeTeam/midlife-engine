@@ -55,8 +55,32 @@ class GameHL extends recharge.midlife.base.GameAbstract {
       return InputParamMap.get(115);
     }));
 
+    InputManager.getInstance().setInput("LeftShoulder", new Input(() -> {
+      return InputParamMap.get(113);
+    }));
+
+    InputManager.getInstance().setInput("RightShoulder", new Input(() -> {
+      return InputParamMap.get(101);
+    }));
+
+    InputManager.getInstance().setInput("Start", new Input(() -> {
+      return InputParamMap.get(27);
+    }));
+    InputManager.getInstance().setInput("Select", new Input(() -> {
+      return InputParamMap.get(8);
+    }));
+
     InputManager.getInstance().setInput("ButtonA", new Input(() -> {
-      return InputParamMap.get(32);
+      return InputParamMap.get(106);
+    }));
+    InputManager.getInstance().setInput("ButtonB", new Input(() -> {
+      return InputParamMap.get(107);
+    }));
+    InputManager.getInstance().setInput("ButtonX", new Input(() -> {
+      return InputParamMap.get(117);
+    }));
+    InputManager.getInstance().setInput("ButtonY", new Input(() -> {
+      return InputParamMap.get(105);
     }));
 
     var currentTime = Timer.stamp();
@@ -70,6 +94,7 @@ class GameHL extends recharge.midlife.base.GameAbstract {
         }
 
         if (event.type == EventType.KeyDown) {
+          trace(event.keyCode);
           processKeyboard(1.0, event.keyCode);
         }
 
