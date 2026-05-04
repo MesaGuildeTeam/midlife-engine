@@ -9,7 +9,6 @@ import sdl.GL;
 
 import recharge.midlife.base.Game;
 import recharge.midlife.base.Scene;
-
 import recharge.midlife.base.graphics.RendererAbstract.RenderInstruction;
 import recharge.midlife.base.graphics.RendererAbstract;
 import recharge.midlife.base.graphics.Shader;
@@ -90,15 +89,15 @@ class RendererHL extends RendererAbstract {
     _currentBG = color;
   }
 
-  
   function assignSceneUniforms(shader:Program, scene:Scene) {
     var windowDimensions = GL.getUniformLocation(shader, "u_WindowDimensions");
     if (windowDimensions != null) {
-      var v = [Game.getInstance().dimensions.x, Game.getInstance().dimensions.y, 0.0, 0.0];
+      var v = [Game.getInstance()
+        .dimensions.x, Game.getInstance().dimensions.y, 0.0, 0.0];
       var v4 = Float32Array.fromArray(v).getData();
       GL.uniform4fv(windowDimensions, Bytes.fromBytes(v4.bytes), 0, 1);
     }
-    
+
     var ambient = GL.getUniformLocation(shader, "u_Ambient");
     if (ambient != null) {
       var v = [_currentBG.x, _currentBG.y, _currentBG.z, 0.0];
@@ -145,18 +144,17 @@ class RendererHL extends RendererAbstract {
 
   override function drawInstruction(instruction:RenderInstruction,
       scene:Scene) {
-   
     var shader:Program = cast(instruction.shader.getShaderProgram(), Program);
-   
+
     // TODO: Figure out this impulse condition to figure out how to optimize
     // Shader Switching
-    
+
     // if (currentShader == null || currentShader != instruction.shader) {
-      GL.useProgram(shader);
-      currentShader = instruction.shader;
-      assignSceneUniforms(shader, scene);
+    GL.useProgram(shader);
+    currentShader = instruction.shader;
+    assignSceneUniforms(shader, scene);
     // }
-    
+
     // Material Uniforms
     var tfArray:Array<Float> = new Array();
     instruction.transformation.copyIntoArray(tfArray, 0);

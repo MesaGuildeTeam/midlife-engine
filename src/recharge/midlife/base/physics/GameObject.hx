@@ -116,7 +116,7 @@ class GameObject extends Node {
 
     position += velocity * _dtStep + accSum * _dtStep * _dtStep / 2;
     velocity += accSum * _dtStep;
-    
+
 
     if (length(position - prevPos) > eps) {
       _restingCounter = 0;

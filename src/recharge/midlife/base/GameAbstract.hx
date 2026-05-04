@@ -20,12 +20,12 @@ class GameAbstract {
 
   var _inputMode:InputMode;
 
-  static var _windowDimensions:Vec2 = vec2(320, 240);
+  static var _windowDimensions:Vec2 = vec2(640, 480);
   static var _instance:GameAbstract;
 
   /**
    * The default constructor, creates a new game instance with an initial scene
-   * @param initialScene 
+   * @param initialScene
    */
   public function new() {
     if (_instance != null)
@@ -64,7 +64,9 @@ class GameAbstract {
 
   public function addScene(scene:Scene, name:String):Void {
     if (_loadedScenes.exists(name))
-      trace("WARNING: Scene with name " + name + " already exists. Overwriting...");
+      trace("WARNING: Scene with name "
+        + name
+        + " already exists. Overwriting...");
 
     _loadedScenes[name] = scene;
     scene.init();

@@ -184,7 +184,7 @@ class RendererAbstract {
   public function preRender(scene:Scene):Void {
     // Default implementation does nothing
   }
-  
+
   /**
    * Called after the render queue is processed
    * @param scene 

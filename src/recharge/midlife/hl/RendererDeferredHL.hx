@@ -7,7 +7,6 @@ import hl.Bytes;
 
 import sdl.GL;
 
-
 import recharge.midlife.base.graphics.RendererAbstract.RenderInstruction;
 import recharge.midlife.base.graphics.RendererAbstract;
 import recharge.midlife.base.Scene;
@@ -100,8 +99,9 @@ class RendererDeferredHL extends RendererHL {
     if (uPositionTex != null) {
       GL.uniform1i(uPositionTex, 2);
     }
-    
-    var uSpecularTex = GL.getUniformLocation(currentShader, "u_SpecularTexture");
+
+    var uSpecularTex = GL.getUniformLocation(currentShader,
+      "u_SpecularTexture");
     if (uSpecularTex != null) {
       GL.uniform1i(uSpecularTex, 3);
     }

@@ -37,8 +37,8 @@ class FrameBufferHL {
 
     normalTexture = GL.createTexture();
     GL.bindTexture(GL.TEXTURE_2D, normalTexture);
-    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB, GL.FLOAT,
-      null);
+    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB,
+      GL.FLOAT, null);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
@@ -48,8 +48,8 @@ class FrameBufferHL {
 
     positionTexture = GL.createTexture();
     GL.bindTexture(GL.TEXTURE_2D, positionTexture);
-    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB, GL.FLOAT,
-      null);
+    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB,
+      GL.FLOAT, null);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
@@ -59,8 +59,8 @@ class FrameBufferHL {
 
     specularTexture = GL.createTexture();
     GL.bindTexture(GL.TEXTURE_2D, specularTexture);
-    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB, GL.FLOAT,
-      null);
+    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB,
+      GL.FLOAT, null);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
@@ -71,7 +71,8 @@ class FrameBufferHL {
     // Render Buffer
     rbo = GL.createRenderbuffer();
     GL.bindRenderbuffer(GL.RENDERBUFFER, rbo);
-    GL.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT16, width, height);
+    GL.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT16, width,
+      height);
     GL.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.DEPTH_ATTACHMENT,
       GL.RENDERBUFFER, rbo);
 
@@ -80,36 +81,36 @@ class FrameBufferHL {
   }
 
   public function resize(width:Int, height:Int) {
-
     dimensions = vec2(width, height);
 
     // Bind the framebuffer to make changes
     GL.bindFramebuffer(GL.FRAMEBUFFER, fbo);
-    
+
     // Resize color texture
     GL.bindTexture(GL.TEXTURE_2D, colorTexture);
     GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB,
       GL.FLOAT, null);
-    
+
     // Resize normal texture
     GL.bindTexture(GL.TEXTURE_2D, normalTexture);
-    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB, GL.FLOAT,
-      null);
-    
+    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB,
+      GL.FLOAT, null);
+
     // Resize position texture
     GL.bindTexture(GL.TEXTURE_2D, positionTexture);
-    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB, GL.FLOAT,
-      null);
-    
+    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB,
+      GL.FLOAT, null);
+
     // Resize specular texture
     GL.bindTexture(GL.TEXTURE_2D, specularTexture);
-    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB, GL.FLOAT,
-      null);
-    
+    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB16F, width, height, 0, GL.RGB,
+      GL.FLOAT, null);
+
     // Resize renderbuffer
     GL.bindRenderbuffer(GL.RENDERBUFFER, rbo);
-    GL.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT16, width, height);
-    
+    GL.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT16, width,
+      height);
+
     // Unbind everything
     GL.bindFramebuffer(GL.FRAMEBUFFER, cast(0, Framebuffer));
     GL.bindRenderbuffer(GL.RENDERBUFFER, cast(0, Renderbuffer));
