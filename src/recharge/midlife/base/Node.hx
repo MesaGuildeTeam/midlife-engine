@@ -175,7 +175,8 @@ class Node {
   public function draw():Void {
     for (name in _children.keys()) {
       for (child in getChildren(name)) {
-        child.draw();
+        if (child.enabled)
+          child.draw();
       }
     }
   }
@@ -183,7 +184,8 @@ class Node {
   public function update(dt:Float):Void {
     for (name in _children.keys()) {
       for (child in getChildren(name)) {
-        child.update(dt);
+        if (child.enabled)
+          child.update(dt);
       }
     }
   }
