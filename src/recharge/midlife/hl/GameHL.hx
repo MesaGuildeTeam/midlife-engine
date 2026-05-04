@@ -103,6 +103,7 @@ class GameHL extends recharge.midlife.base.GameAbstract {
         if (event.state == sdl.WindowStateChange.Resize) {
           dimensions = vec2(window.width, window.height);
 
+          #if midlife_deferred
           if (Std.isOfType(_renderer, RendererDeferredHL)) {
             var canvasSize = vec2(window.width, window.height);
 
@@ -114,6 +115,7 @@ class GameHL extends recharge.midlife.base.GameAbstract {
 
             _renderer.getBuffer().resize(cast canvasSize.x, cast canvasSize.y);
           }
+          #end
         }
 
         if (event.type == EventType.KeyDown) {
