@@ -9,10 +9,12 @@ uniform sampler2D u_SpecularTexture;
 
 uniform vec4 u_Ambient;
 
+uniform vec4 u_WindowDimensions;
+
 uniform mat4 u_Camera;
 
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 240
+#define SCREEN_WIDTH u_WindowDimensions.x
+#define SCREEN_HEIGHT u_WindowDimensions.y
 
 vec3 genNoise(vec2 p) {
     vec3 q = vec3(
@@ -47,7 +49,7 @@ float computeAO(vec2 uv) {
     // Generate a quick projection matrix
 
     float occlusion = 0.0;
-    float radius = 0.3;
+    float radius = 0.2;
     float bias = 0.01;
     for (int i = 0; i < 128; i++) {
         vec3 sample = genNoise(vec2(float(i), float(i*2))*0.1)* vec3(2.0, 2.0, 1.0)- vec3(1.0, 1.0, 0.0);
@@ -62,11 +64,21 @@ float computeAO(vec2 uv) {
         //offset.w = offset.z / 10.0;
         offset.z = log(offset.z+1.0)/ log(60.0+1.0);
         offset.xy = offset.xy / vec2(160.0, 120.0) * 16.0 ;
+
+        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+            offset.x *= SCREEN_HEIGHT / SCREEN_WIDTH;
+        } else {
+            offset.y *= SCREEN_WIDTH / SCREEN_HEIGHT;
+        }
         
         //offset.xy = offset.xy / offset.w;
         offset.xy = offset.xy * 0.5 + 0.5 ;
         
         float sampleDepth = texture(u_PositionTexture, offset.xy).z;
+
+        if (sampleDepth == 0.0) {
+            continue;
+        }
         
         float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
         occlusion += ( sampleDepth <= samplePos.z + bias ? 1.0: 0.0 ) * rangeCheck;
@@ -125,7 +137,8 @@ void main() {
     }
 
     float occlusion = computeAO(v_UV);
-    vec4 color = texture(u_Texture, v_UV) * occlusion;
+    vec4 color = texture(u_Texture, v_UV);
+    color.xyz = mix(color.xyz, color.xyz + occlusion - 1.0, 0.2);
     
     vec3 normal = texture(u_NormalTexture, v_UV).xyz;
     normal = (u_Camera * vec4(normal, 0.0)).xyz;
@@ -134,10 +147,7 @@ void main() {
 
     float F0 = 0.04;
     float fresnel = F0 + (1.0 - F0) * pow(1.0 - max(0.0, dot(normalize(normal), vec3(0.0, 0.0, -1.0))), 5.0);
-    color.xyz += computeSSR() * vec3(fresnel) * specular * 2.0;
-
-    // Apply bloom effect
-    color.xyz = desaturate(color.xyz);
+    color.xyz += computeSSR() * vec3(fresnel) * specular;
 
     // gl_FragColor = vec4(specular, specular, specular, 1.0);
     gl_FragColor = vec4(color.rgb, color.a);

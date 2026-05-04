@@ -100,6 +100,19 @@ class GameHL extends recharge.midlife.base.GameAbstract {
           running = false;
         }
 
+        if (event.state == sdl.WindowStateChange.Resize) {
+          dimensions = vec2(window.width, window.height);
+
+          if (Std.isOfType(_renderer, RendererDeferredHL)) {
+            var canvasSize = dimensions;
+            while (canvasSize.x > 320 || canvasSize.y > 240) {
+              canvasSize = canvasSize * 0.5;
+            }
+
+            _renderer.getBuffer().resize(cast canvasSize.x, cast canvasSize.y);
+          }
+        }
+
         if (event.type == EventType.KeyDown) {
           trace(event.keyCode);
           processKeyboard(1.0, event.keyCode);
@@ -111,6 +124,7 @@ class GameHL extends recharge.midlife.base.GameAbstract {
 
         return true;
       });
+
 
       GL.viewport(0, 0, window.width, window.height);
 

@@ -7,6 +7,7 @@ import hl.Bytes;
 
 import sdl.GL;
 
+
 import recharge.midlife.base.graphics.RendererAbstract.RenderInstruction;
 import recharge.midlife.base.graphics.RendererAbstract;
 import recharge.midlife.base.Scene;
@@ -26,6 +27,10 @@ class RendererDeferredHL extends RendererHL {
     _bufferShader = new ShaderHL('midlife/post.frag', 'midlife/post.vert');
   }
 
+  public function getBuffer():FrameBufferHL {
+    return _buffer;
+  }
+
   override public function setBackgroundColor(color:Vec3):Void {
     _currentBG = color;
   }
@@ -33,7 +38,8 @@ class RendererDeferredHL extends RendererHL {
   override function preRender(scene:Scene):Void {
     // Bind framebuffer
     _buffer.bind();
-    GL.viewport(0, 0, 320, 240);
+    var dims = _buffer.getDimensions();
+    GL.viewport(0, 0, cast dims.x, cast dims.y);
     GL.enable(GL.DEPTH_TEST);
     GL.depthFunc(GL.LESS);
     GL.depthMask(true);
@@ -55,7 +61,7 @@ class RendererDeferredHL extends RendererHL {
   override function postRender(scene:Scene):Void {
     // Unbind framebuffer
     _buffer.unbind();
-    GL.viewport(0, 0, GameHL.window.width, GameHL.window.height);
+    GL.viewport(0, 0, cast GameHL.window.width, cast GameHL.window.height);
     GL.clearColor(_currentBG.x, _currentBG.y, _currentBG.z, 1);
     GL.clear(GL.COLOR_BUFFER_BIT);
     GL.clear(GL.DEPTH_BUFFER_BIT);

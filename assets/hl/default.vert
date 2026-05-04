@@ -8,6 +8,7 @@ attribute vec3 a_Normal;
 
 uniform mat4 u_Transform;
 uniform mat4 u_Camera;
+uniform vec4 u_WindowDimensions;
 
 varying vec3 v_Position;
 varying vec2 v_UV;
@@ -36,6 +37,12 @@ void main() {
 
     // Correct width to game screen ratio and add screen space
     gl_Position.xy = gl_Position.xy / vec2(160.0, 120.0) * (pixPerUnit);
+
+    if (u_WindowDimensions.x > u_WindowDimensions.y) {
+        gl_Position.x *= u_WindowDimensions.y / u_WindowDimensions.x;
+    } else {
+        gl_Position.y *= u_WindowDimensions.x / u_WindowDimensions.y;
+    }
 
     v_Normal = (u_Transform * vec4(a_Normal, 0.0)).xyz;
     v_ScreenNormal = (inverse(u_Camera) * u_Transform * vec4(a_Normal, 0.0)).xyz;

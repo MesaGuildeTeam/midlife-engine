@@ -78,46 +78,51 @@ class UIElement extends Node {
   **/
   public function getPosition():Vec2 {
     var topLeft:Vec2 = vec2(0, 0);
-    var containerSize:Vec2 = Game.getInstance().dimensions / 8;
+    var windowSize = Game.getInstance().dimensions;
+
+    var computeOffset:Vec2 = _offset;
+
+    var containerSize:Vec2 = windowSize / 8;
 
     if (Std.isOfType(_parent, UIElement)) {
       containerSize = cast(_parent, UIElement).dimensions;
       topLeft = cast(_parent, UIElement).getPosition();
     }
 
+
     switch (_anchor) {
       case TOP_LEFT:
-        return topLeft + _offset;
+        return topLeft + computeOffset;
       case TOP_CENTER:
         return topLeft
           + vec2(containerSize.x / 2 - _dimensions.x / 2, 0)
-          + _offset;
+          + computeOffset;
       case TOP_RIGHT:
         return topLeft
           + vec2(containerSize.x - _dimensions.x, 0)
-          + _offset * vec2(-1, 1);
+          + computeOffset * vec2(-1, 1);
       case MIDDLE_LEFT:
         return topLeft
           + vec2(0, containerSize.y / 2 - _dimensions.y / 2)
-          + _offset;
+          + computeOffset;
       case CENTER:
-        return topLeft + (containerSize - dimensions) / 2 + _offset;
+        return topLeft + (containerSize - _dimensions) / 2 + computeOffset;
       case MIDDLE_RIGHT:
         return topLeft
           + vec2(containerSize.x - _dimensions.x,
             containerSize.y / 2 - _dimensions.y / 2)
-          + _offset;
+          + computeOffset;
       case BOTTOM_LEFT:
         return topLeft
           + vec2(0, containerSize.y - _dimensions.y)
-          + _offset * vec2(1, -1);
+          + computeOffset * vec2(1, -1);
       case BOTTOM_CENTER:
         return topLeft
           + vec2(containerSize.x / 2 - _dimensions.x / 2,
             containerSize.y - _dimensions.y)
-          + _offset * vec2(1, -1);
+          + computeOffset * vec2(1, -1);
       case BOTTOM_RIGHT:
-        return topLeft + containerSize - _dimensions - _offset;
+        return topLeft + containerSize - _dimensions - computeOffset;
     }
   }
 }
