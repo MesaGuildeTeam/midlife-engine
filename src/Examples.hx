@@ -28,6 +28,7 @@ class ExampleTraverser extends Scene {
       removeChild(_currentExample);
 
     trace("Loading example " + name);
+
     _currentExample = NodeFactory.create(name, name);
     addChild(_currentExample);
 

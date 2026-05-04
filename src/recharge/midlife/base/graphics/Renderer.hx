@@ -7,7 +7,11 @@
 package recharge.midlife.base.graphics;
 
 #if hl
+#if midlife_deferred
+typedef Renderer = recharge.midlife.hl.RendererDeferredHL;
+#else
 typedef Renderer = recharge.midlife.hl.RendererHL;
+#end
 #else
 typedef Renderer = RendererAbstract;
 #end

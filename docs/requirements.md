@@ -19,21 +19,19 @@ Offer compatibility with the RetroLib API but build natively to
 - [x] Engine focuses primarily on planes and cubes.
 - [x] If a more complex mesh is needed, the developers can work with basic shapes to compose more complex
 - [x] You can use simple textures to cover a plane
-- [ ] If a spritesheet is needed, there is an object that generates meshes based on a spritesheet
 
 ### Render Pipeline
 
 - [x] In order for a unit plane to be 1:1 with a 320x240 window, the z-position should equal 10
-- [ ] The following PBR parameters should be controllable:
+- [x] The following PBR parameters should be controllable:
   - [x] Diffuse
   - [x] First Diffuse can be color manipulated
-  - [ ] Diffuse 2 (NOT Color Manipulated)
-  - [ ] Specular
-  - [ ] Normal
+  - [x] Diffuse 2 (NOT Color Manipulated)
+  - [x] Specular
+  - [x] Normal
 - [x] There is controllable light and an option to add point lights if needed
-- [ ] The rendering pipeline knows how to differentiate between the following
+- [x] The rendering pipeline knows how to differentiate between the following
   - [x] Environment Models
-  - [ ] Environment Lines (Will be needed for a certain game idea)
   - [x] UI Rendering
 
 > To-Do: Consult with a 3D Artist what the standard maps are for a model and how color manipulation is usually used in development
@@ -57,7 +55,7 @@ Offer compatibility with the RetroLib API but build natively to
 
 ## Input
 
-- [ ] Input manager itself is generic but can also read rising/falling edges of inputs
+- [x] Input manager itself is generic but can also read rising/falling edges of inputs
 - [ ] The following inputs are pre-defined for the game engine
   - [x] D-pad
   - [x] A Button

@@ -57,6 +57,7 @@ class UIButton extends UIElement {
   }
 
   public override function draw() {
+    Game.getInstance().getRenderer().toggleUIQueue();
     Game.getInstance().getRenderer().pushShader(UIElement.uiShader);
     Game.getInstance()
       .getRenderer()

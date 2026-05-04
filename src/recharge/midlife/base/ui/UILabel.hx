@@ -31,6 +31,7 @@ class UILabel extends UIElement {
   }
 
   override public function draw():Void {
+    Game.getInstance().getRenderer().toggleUIQueue();
     Game.getInstance().getRenderer().pushShader(UIElement.uiShader);
     Game.getInstance().getRenderer().pushTexture(_fontTexture);
     Game.getInstance()

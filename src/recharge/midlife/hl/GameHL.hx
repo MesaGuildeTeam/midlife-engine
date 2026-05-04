@@ -14,6 +14,8 @@ import haxe.Timer;
 class GameHL extends recharge.midlife.base.GameAbstract {
   static var InputParamMap:Map<Int, Float> = new Map();
 
+  static public var window:Window;
+
   public static function getInstance():recharge.midlife.base.GameAbstract {
     if (recharge.midlife.base.GameAbstract._instance == null)
       recharge.midlife.base.GameAbstract._instance = new GameHL();
@@ -35,13 +37,18 @@ class GameHL extends recharge.midlife.base.GameAbstract {
 
     // Base Resolution: 320x240 like the PS1
     // Still recommend to play at 1280x960 or 640x480
-    var window = new Window(title, 320, 240);
+    window = new Window(title, 640, 480);
     window.renderTo();
 
     if (!GL.init()) {
       throw("OpenGL is unavailable");
     }
+
+    #if midlife_deferred
+    _renderer = new RendererDeferredHL();
+    #else
     _renderer = new RendererHL();
+    #end
 
     // Populate InputManager
     InputManager.getInstance().setInput("DPadX", new Input(() -> {
@@ -93,6 +100,22 @@ class GameHL extends recharge.midlife.base.GameAbstract {
           running = false;
         }
 
+        if (event.state == sdl.WindowStateChange.Resize) {
+          dimensions = vec2(window.width, window.height);
+
+          if (Std.isOfType(_renderer, RendererDeferredHL)) {
+            var canvasSize = dimensions;
+
+            #if midlife_canvas_scaling
+            while (canvasSize.x >= 320 || canvasSize.y >= 240) {
+              canvasSize = canvasSize * 0.5;
+            }
+            #end
+
+            _renderer.getBuffer().resize(cast canvasSize.x, cast canvasSize.y);
+          }
+        }
+
         if (event.type == EventType.KeyDown) {
           trace(event.keyCode);
           processKeyboard(1.0, event.keyCode);
@@ -105,6 +128,7 @@ class GameHL extends recharge.midlife.base.GameAbstract {
         return true;
       });
 
+
       GL.viewport(0, 0, window.width, window.height);
 
       // Update and render the current scene
@@ -113,8 +137,6 @@ class GameHL extends recharge.midlife.base.GameAbstract {
       this.updateScene(dt);
 
       this.drawScene();
-      GL.clear(GL.COLOR_BUFFER_BIT);
-      GL.clear(GL.DEPTH_BUFFER_BIT);
       _renderer.flush(_currentScene);
       window.present();
     }

@@ -97,6 +97,9 @@ class GameAbstract {
   public var dimensions(get, set):Vec2;
 
   public function get_dimensions():Vec2 {
+    if (_windowDimensions.x >= 640.0 && _windowDimensions.y >= 480.0) {
+      return _windowDimensions / 2;
+    }
     return _windowDimensions;
   }
 
