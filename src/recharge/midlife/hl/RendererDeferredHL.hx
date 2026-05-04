@@ -36,6 +36,9 @@ class RendererDeferredHL extends RendererHL {
   }
 
   override function preRender(scene:Scene):Void {
+    // Enable depth testing for scene rendering
+    GL.enable(GL.DEPTH_TEST);
+
     // Bind framebuffer
     _buffer.bind();
     var dims = _buffer.getDimensions();
@@ -130,5 +133,8 @@ class RendererDeferredHL extends RendererHL {
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, indices16.byteLength,
       Bytes.fromBytes(indices16.bytes), GL.DYNAMIC_DRAW);
     GL.drawElements(GL.TRIANGLES, indices.length, GL.UNSIGNED_SHORT, 0);
+
+    // Prepare for UI rendering
+    GL.disable(GL.DEPTH_TEST);
   }
 }

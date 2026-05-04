@@ -115,6 +115,12 @@ vec3 computeSSR() {
         // TODO: Fix this before merging to main
         //offset.w = offset.z / 10.0;
         offset.xy = offset.xy / vec2(160.0, 120.0) * 16.0;
+        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+            offset.x *= SCREEN_HEIGHT / SCREEN_WIDTH;
+        } else {
+            offset.y *= SCREEN_WIDTH / SCREEN_HEIGHT;
+        }
+
         offset.xy = offset.xy * 0.5 + 0.5;
         // get new position from texture
         vec4 samplePos = texture(u_PositionTexture, offset.xy); 
@@ -145,9 +151,9 @@ void main() {
 
     float specular = texture(u_SpecularTexture, v_UV).x;
 
-    float F0 = 0.04;
-    float fresnel = F0 + (1.0 - F0) * pow(1.0 - max(0.0, dot(normalize(normal), vec3(0.0, 0.0, -1.0))), 5.0);
-    color.xyz += computeSSR() * vec3(fresnel) * specular;
+    float F0 = 0.05;
+    float fresnel = F0 + (1.0 - F0) * pow(1.0 - max(0.0, dot(normalize(normal), vec3(0.0, 0.0, -1.0))), 3.0);
+    color.xyz += computeSSR() * fresnel * specular;
 
     // gl_FragColor = vec4(specular, specular, specular, 1.0);
     gl_FragColor = vec4(color.rgb, color.a);

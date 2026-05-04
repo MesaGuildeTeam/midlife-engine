@@ -105,9 +105,12 @@ class GameHL extends recharge.midlife.base.GameAbstract {
 
           if (Std.isOfType(_renderer, RendererDeferredHL)) {
             var canvasSize = dimensions;
-            while (canvasSize.x > 320 || canvasSize.y > 240) {
+
+            #if midlife_canvas_scaling
+            while (canvasSize.x >= 320 || canvasSize.y >= 240) {
               canvasSize = canvasSize * 0.5;
             }
+            #end
 
             _renderer.getBuffer().resize(cast canvasSize.x, cast canvasSize.y);
           }

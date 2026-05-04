@@ -49,10 +49,13 @@ class RendererAbstract {
   static var quadMesh:Mesh = new Plane();
 
   var _renderQueue:Array<RenderInstruction>;
+  var _uiRenderQueue:Array<RenderInstruction>;
   var _constructingInstruction:RenderInstruction;
+  var _useUITarget:Bool = false;
 
   public function new() {
     _renderQueue = new Array();
+    _uiRenderQueue = new Array();
     _constructingInstruction = new RenderInstruction();
   }
 
@@ -79,6 +82,10 @@ class RendererAbstract {
 
     // Call post-render hook
     postRender(scene);
+
+    for (i in _uiRenderQueue)
+      drawInstruction(i, scene);
+    _uiRenderQueue = new Array();
   }
 
   /**
@@ -87,6 +94,10 @@ class RendererAbstract {
    */
   public function pushShader(shader:Shader):Void {
     _constructingInstruction.shader = shader;
+  }
+
+  public function toggleUIQueue():Void {
+    _useUITarget = !_useUITarget;
   }
 
   /**
@@ -108,7 +119,13 @@ class RendererAbstract {
     _constructingInstruction.transformation = tform;
 
     // push instruction and prepare next instruction
-    _renderQueue.push(_constructingInstruction);
+    if (_useUITarget) {
+      _uiRenderQueue.push(_constructingInstruction);
+    } else {
+      _renderQueue.push(_constructingInstruction);
+    }
+
+    _useUITarget = false;
     _constructingInstruction = new RenderInstruction();
   }
 
