@@ -41,8 +41,8 @@ class UIElement extends Node {
 
     if (params != null) {
       _anchor = params.anchor == null ? TOP_LEFT : params.anchor;
-      _dimensions = params.dimensions == null ? vec2(8, 8) : params.dimensions;
-      _offset = params.offset == null ? vec2(0, 0) : params.offset;
+      _dimensions = params.dimensions == null ? vec2(8, 8) : (params.dimensions / vec2(8, 8));
+      _offset = params.offset == null ? vec2(0, 0) : (params.offset / vec2(8, 8));
     } else {
       _anchor = TOP_LEFT;
       _dimensions = vec2(8, 8);

@@ -64,7 +64,7 @@ class GameAbstract {
 
   public function addScene(scene:Scene, name:String):Void {
     if (_loadedScenes.exists(name))
-      throw("Scene with name " + name + " already exists");
+      trace("WARNING: Scene with name " + name + " already exists. Overwriting...");
 
     _loadedScenes[name] = scene;
     scene.init();
