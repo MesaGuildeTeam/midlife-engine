@@ -166,8 +166,10 @@ class RendererHL extends RendererAbstract {
 
     // Textures
     var utUniform = GL.getUniformLocation(shader, "u_usesTexture");
+    var tUniform = GL.getUniformLocation(shader, "u_Diffuse");
     var diffuse:Null<Texture> = instruction.textures.get(TextureSlot.Diffuse);
-    if (diffuse != null) {
+    if (diffuse != null && tUniform != null) {
+      GL.uniform1i(tUniform, 0);
       GL.activeTexture(GL.TEXTURE0);
       GL.bindTexture(GL.TEXTURE_2D, cast(diffuse.getTexture(), sdl.Texture));
 
@@ -179,8 +181,10 @@ class RendererHL extends RendererAbstract {
     }
 
     var diffuse2:Null<Texture> = instruction.textures.get(TextureSlot.Diffuse2);
+    tUniform = GL.getUniformLocation(shader, "u_Diffuse2");
     utUniform = GL.getUniformLocation(shader, "u_usesTexture2");
-    if (diffuse2 != null) {
+    if (diffuse2 != null && tUniform != null) {
+      GL.uniform1i(tUniform, 1);
       GL.activeTexture(GL.TEXTURE1);
       GL.bindTexture(GL.TEXTURE_2D, cast(diffuse2.getTexture(), sdl.Texture));
 
@@ -192,8 +196,10 @@ class RendererHL extends RendererAbstract {
     }
 
     var specular:Null<Texture> = instruction.textures.get(TextureSlot.Specular);
+    tUniform = GL.getUniformLocation(shader, "u_Specular");
     utUniform = GL.getUniformLocation(shader, "u_usesTexture3");
-    if (specular != null) {
+    if (specular != null && tUniform != null) {
+      GL.uniform1i(tUniform, 2);
       GL.activeTexture(GL.TEXTURE2);
       GL.bindTexture(GL.TEXTURE_2D, cast(specular.getTexture(), sdl.Texture));
 
@@ -205,8 +211,10 @@ class RendererHL extends RendererAbstract {
     }
 
     var normal:Null<Texture> = instruction.textures.get(TextureSlot.Normal);
+    tUniform = GL.getUniformLocation(shader, "u_Normal");
     utUniform = GL.getUniformLocation(shader, "u_usesTexture4");
-    if (normal != null) {
+    if (normal != null && tUniform != null) {
+      GL.uniform1i(tUniform, 3);
       GL.activeTexture(GL.TEXTURE3);
       GL.bindTexture(GL.TEXTURE_2D, cast(normal.getTexture(), sdl.Texture));
 
