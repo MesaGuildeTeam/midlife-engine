@@ -18,7 +18,9 @@ class TextMesh extends Mesh {
         char -= 97 - 26;
       } else if (char >= 65) { // Uppercase Letters
         char -= 65;
-      }
+      } else if (char >= 48) { // Numbers
+        char -= 48 - 52;
+      } 
 
       var uvY:Int = Std.int(char / 13);
       var uvX:Int = char % 13;
