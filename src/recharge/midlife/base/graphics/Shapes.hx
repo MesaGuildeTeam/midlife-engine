@@ -14,8 +14,8 @@ class Plane extends Mesh {
     var off = offset == null ? vec3(0, 0, 0) : offset;
     addQuad(new Vertex(vec3(-0.5, -0.5, 0) + off, vec2(0, 1)),
       new Vertex(vec3(0.5, -0.5, 0) + off, vec2(1, 1)),
-      new Vertex(vec3(0.5, 0.5, 0) + off, vec2(0, 0)),
-      new Vertex(vec3(-0.5, 0.5, 0) + off, vec2(1, 0)));
+      new Vertex(vec3(0.5, 0.5, 0) + off, vec2(1, 0)),
+      new Vertex(vec3(-0.5, 0.5, 0) + off, vec2(0, 0)));
     #end
   }
 }

@@ -46,10 +46,10 @@ class RendererDeferredHL extends RendererHL {
     GL.depthFunc(GL.LESS);
     GL.depthMask(true);
 
-    // GL.enable(GL.BLEND);
-    // GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
-    // GL.enable(GL.CULL_FACE);
-    // GL.cullFace(GL.BACK);
+    GL.enable(GL.BLEND);
+    GL.blendFunc(GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
+    GL.enable(GL.CULL_FACE);
+    GL.cullFace(GL.BACK);
 
     var buffersArray = haxe.io.UInt32Array.fromArray([GL.COLOR_ATTACHMENT0, 0x8CE1, 0x8CE2, 0x8CE3])
       .getData();

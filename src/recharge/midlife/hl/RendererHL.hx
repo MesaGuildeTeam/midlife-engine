@@ -29,15 +29,16 @@ class RendererHL extends RendererAbstract {
     // Setup Rendering Rules
     GL.enable(GL.DEPTH_TEST);
     GL.depthFunc(GL.LESS);
-    GL.depthMask(true);
+    //GL.depthMask(false);
 
     GL.enable(GL.BLEND);
-    GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
+    //GL.blendFunc(GL.ONE, GL.ONE);
+    GL.blendFuncSeparate(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA, GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
     GL.enable(GL.CULL_FACE);
     GL.cullFace(GL.BACK);
 
     // GL.polygonMode(GL.FRONT_AND_BACK, GL.LINE);
-    GL.enable(GL.FRAMEBUFFER_SRGB);
+    //GL.enable(GL.FRAMEBUFFER_SRGB);
 
     // Prepare buffers
     _vbo = GL.createBuffer();
