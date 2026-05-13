@@ -21,8 +21,6 @@ class RendererHL extends RendererAbstract {
 
   var _currentBG:Vec3;
 
-  static inline var stride:Int = 8 * 4;
-
   public function new() {
     super();
 
@@ -57,28 +55,6 @@ class RendererHL extends RendererAbstract {
     var _currentShader = cast ShaderHL.defaultShader.getShaderProgram();
     GL.useProgram(_currentShader);
     _currentBG = vec3(0.0);
-
-    var atrPos = GL.getAttribLocation(_currentShader, "a_Position");
-    var atrUV = GL.getAttribLocation(_currentShader, "a_UV");
-    var atrNorm = GL.getAttribLocation(_currentShader, "a_Normal");
-
-    if (atrPos != -1) {
-      trace("Identified attribute a_Position");
-      GL.enableVertexAttribArray(atrPos);
-      GL.vertexAttribPointer(atrPos, 3, GL.FLOAT, false, stride, 0);
-    }
-
-    if (atrUV != -1) {
-      trace("Identified attribute a_UV");
-      GL.enableVertexAttribArray(atrUV);
-      GL.vertexAttribPointer(atrUV, 2, GL.FLOAT, false, stride, 3 * 4);
-    }
-
-    if (atrNorm != -1) {
-      trace("Identified attribute a_Normal");
-      GL.enableVertexAttribArray(atrNorm);
-      GL.vertexAttribPointer(atrNorm, 3, GL.FLOAT, false, stride, 5 * 4);
-    }
 
     // Define vertex attribute space
 
@@ -138,7 +114,12 @@ class RendererHL extends RendererAbstract {
   }
 
   override function preRender(scene:Scene):Void {
+    GL.enable(GL.DEPTH_TEST);
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
+  }
+
+  override function postRender(scene:Scene):Void { 
+    GL.disable(GL.DEPTH_TEST);
   }
 
   var currentShader:Shader = null;
