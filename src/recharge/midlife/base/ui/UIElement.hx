@@ -23,8 +23,8 @@ class UIElement extends Node {
   @:keep
   static var registry = NodeFactory.register(UIElement);
 
-  static var uiShader:Shader = new Shader("midlife/ui.frag", "midlife/ui.vert");
-  static var uiPlane:Mesh = new Plane(vec3(0.5, 0.5, 0.0));
+  public static var uiShader:Shader = new Shader("midlife/ui.frag", "midlife/ui.vert");
+  public static var uiPlane:Mesh = new Plane(vec3(0.5, 0.5, 0.0));
 
   var _uiTag:String;
   var _uiClass:String;
