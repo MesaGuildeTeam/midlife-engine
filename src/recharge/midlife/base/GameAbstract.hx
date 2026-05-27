@@ -15,6 +15,8 @@ import recharge.midlife.base.Node;
 class GameAbstract {
   var _currentScene:Scene;
   var _loadedScenes:Map<String, Scene>;
+  var _running:Bool;
+  
   var _renderer:Renderer;
   var _graphicsReady:Bool = false;
 
@@ -42,6 +44,7 @@ class GameAbstract {
     switchScene(initialScene.name);
 
     _instance = this;
+    _running = true;
   }
 
   @:keep
@@ -50,6 +53,10 @@ class GameAbstract {
       _instance = new Game();
 
     return _instance;
+  }
+
+  public function quit():Void {
+    _running = false;
   }
 
   public function getRenderer():Renderer {

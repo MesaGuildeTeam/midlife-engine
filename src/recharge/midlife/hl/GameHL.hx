@@ -33,7 +33,7 @@ class GameHL extends recharge.midlife.base.GameAbstract {
 
     // Initialize Window and Renderer
     var title = haxe.macro.Compiler.getDefine("engine_gametitle");
-    title = title != null ? title : "Heartbreak Engine";
+    title = title != null ? title : "Midlife Engine";
 
     // Base Resolution: 320x240 like the PS1
     // Still recommend to play at 1280x960 or 640x480
@@ -92,12 +92,11 @@ class GameHL extends recharge.midlife.base.GameAbstract {
 
     var currentTime = Timer.stamp();
     // Run Game Loop
-    var running = true;
-    while (running) {
+    while (_running) {
       var previousTime = currentTime;
       Sdl.processEvents((event) -> {
         if (event.type == EventType.Quit) {
-          running = false;
+          _running = false;
         }
 
         if (event.state == sdl.WindowStateChange.Resize) {
