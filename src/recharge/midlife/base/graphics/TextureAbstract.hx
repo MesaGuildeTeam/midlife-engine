@@ -11,6 +11,7 @@ class TextureAbstract {
   var _dimensions:Vec2;
 
   public var _path:String;
+  public var isTransparent:Bool = false;
 
   function loadTexture():Void {
     trace("WARNING: texture loading process is undefined. Will default to 0");
