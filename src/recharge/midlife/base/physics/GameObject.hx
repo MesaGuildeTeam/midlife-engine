@@ -103,18 +103,18 @@ class GameObject extends Node {
   }
 
   public function computeKinematics(dt:Float, collision:Bool):Void {
-    var prevPos = position;
-
-    var parentAsWorld:World = cast(parent, World);
-    var accSum = acceleration + parentAsWorld.gravity;
-
-    if (isStatic || isResting) {
+    if (isResting) {
       acceleration = vec3(0);
       velocity = vec3(0);
     }
 
-    if (isStatic || (isResting && collision))
+    if (isResting && collision)
       return;
+
+    var prevPos = position;
+
+    var parentAsWorld:World = cast(parent, World);
+    var accSum = acceleration + parentAsWorld.gravity;
 
     position += velocity * _dtStep + accSum * _dtStep * _dtStep / 2;
     velocity += accSum * _dtStep;
