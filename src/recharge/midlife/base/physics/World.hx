@@ -79,6 +79,8 @@ class World extends Node {
     for (i in 0...gameObjects.length) {
       var childA:GameObject = gameObjects[i];
 
+      var hasCollided:Bool = false;
+
       for (j in i...gameObjects.length) {
         if (i == j)
           continue;
@@ -90,6 +92,8 @@ class World extends Node {
         if (depth > 0)
           continue;
 
+        hasCollided = true;
+
         // Compute Collisions
         var elasticity:Float = 0.8;
         computeNewVelocity(childA, childB, elasticity);
@@ -99,7 +103,7 @@ class World extends Node {
         childB.onCollision(childA);
       }
 
-      childA.computeKinematics(dt);
+      childA.computeKinematics(dt, hasCollided);
     }
   }
 
@@ -114,8 +118,10 @@ class World extends Node {
       childB:GameObject, elasticity:Float, lookahead:Bool = false):Void {
     var prevVelA = childA.velocity;
 
-    var normalA = childA.shape.getNormal(childB.position - childA.position);
-    var normalB = childB.shape.getNormal(childA.position - childB.position);
+    var normalA = childA.shape.getNormal(childA.shape.getClosestPoint(childB.position
+      - childA.position));
+    var normalB = childB.shape.getNormal(childA.shape.getClosestPoint(childA.position
+      - childB.position));
     if (childA.isStatic) {
       if (!lookahead)
         childB.velocity -= (1
@@ -143,7 +149,7 @@ class World extends Node {
 
     // Minor separation to avoid seeping through
     var depth = checkCollision(childA, childB);
-    depth = -depth + 0.05;
+    depth = -depth + 0.01;
     if (!childA.isStatic)
       childA.position += normalB * depth * childA.mass / (childA.mass
         + childB.mass);

@@ -15,17 +15,19 @@ import recharge.midlife.base.Node;
 class GameAbstract {
   var _currentScene:Scene;
   var _loadedScenes:Map<String, Scene>;
+  var _running:Bool;
+  
   var _renderer:Renderer;
   var _graphicsReady:Bool = false;
 
   var _inputMode:InputMode;
 
-  static var _windowDimensions:Vec2 = vec2(320, 240);
+  static var _windowDimensions:Vec2 = vec2(640, 480);
   static var _instance:GameAbstract;
 
   /**
    * The default constructor, creates a new game instance with an initial scene
-   * @param initialScene 
+   * @param initialScene
    */
   public function new() {
     if (_instance != null)
@@ -42,6 +44,7 @@ class GameAbstract {
     switchScene(initialScene.name);
 
     _instance = this;
+    _running = true;
   }
 
   @:keep
@@ -50,6 +53,10 @@ class GameAbstract {
       _instance = new Game();
 
     return _instance;
+  }
+
+  public function quit():Void {
+    _running = false;
   }
 
   public function getRenderer():Renderer {
@@ -64,7 +71,9 @@ class GameAbstract {
 
   public function addScene(scene:Scene, name:String):Void {
     if (_loadedScenes.exists(name))
-      throw("Scene with name " + name + " already exists");
+      trace("WARNING: Scene with name "
+        + name
+        + " already exists. Overwriting...");
 
     _loadedScenes[name] = scene;
     scene.init();
@@ -97,6 +106,9 @@ class GameAbstract {
   public var dimensions(get, set):Vec2;
 
   public function get_dimensions():Vec2 {
+    if (_windowDimensions.x >= 640.0 && _windowDimensions.y >= 480.0) {
+      return _windowDimensions / 2;
+    }
     return _windowDimensions;
   }
 

@@ -51,7 +51,7 @@ class HelloWorld extends Node {
     // Game.getInstance().getRenderer().pushTexture(texture);
     Game.getInstance()
       .getRenderer()
-      .queueMesh(mesh, vec3(0, 0, 10), vec3(1), vec3(30, time, 0));
+      .queueMesh(mesh, vec3(0, 0, 10), vec3(1), vec3(0, time, 0));
 
     // Game.getInstance().getRenderer().queueMesh(mesh2, vec3(0, -2, 10), vec3(1), vec3(0));
 

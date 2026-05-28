@@ -49,10 +49,13 @@ class RendererAbstract {
   static var quadMesh:Mesh = new Plane();
 
   var _renderQueue:Array<RenderInstruction>;
+  var _uiRenderQueue:Array<RenderInstruction>;
   var _constructingInstruction:RenderInstruction;
+  var _useUITarget:Bool = false;
 
   public function new() {
     _renderQueue = new Array();
+    _uiRenderQueue = new Array();
     _constructingInstruction = new RenderInstruction();
   }
 
@@ -64,28 +67,40 @@ class RendererAbstract {
     ArraySort.sort(_renderQueue, (a, b) -> {
       if (a.getZ() < b.getZ())
         return -1;
-      if (a.getZ() > b.getZ())
-        return 1;
-      return 0;
+      return 1;
     });
+
+    // Call pre-render hook
+    preRender(scene);
 
     // Iterate and clean
     for (i in _renderQueue)
       drawInstruction(i, scene);
     _renderQueue = new Array();
+
+    // Call post-render hook
+    postRender(scene);
+
+    for (i in _uiRenderQueue)
+      drawInstruction(i, scene);
+    _uiRenderQueue = new Array();
   }
 
   /**
    * Pushes a shader to be used for rendering the next mesh
-   * @param shader 
+   * @param shader
    */
   public function pushShader(shader:Shader):Void {
     _constructingInstruction.shader = shader;
   }
 
+  public function toggleUIQueue():Void {
+    _useUITarget = !_useUITarget;
+  }
+
   /**
    * Queues the rendering of a mesh with the specified transformation
-   * 
+   *
    * @param mesh the mesh to draw
    * @param pos the position to draw the mesh at in world space, defaults to (0,0,0)
    * @param scale the scale to draw the mesh at, defaults to (1,1,1)
@@ -102,7 +117,13 @@ class RendererAbstract {
     _constructingInstruction.transformation = tform;
 
     // push instruction and prepare next instruction
-    _renderQueue.push(_constructingInstruction);
+    if (_useUITarget) {
+      _uiRenderQueue.push(_constructingInstruction);
+    } else {
+      _renderQueue.push(_constructingInstruction);
+    }
+
+    _useUITarget = false;
     _constructingInstruction = new RenderInstruction();
   }
 
@@ -121,12 +142,12 @@ class RendererAbstract {
 
   /**
    * simplified the queueing of a single sprite at a given position with a given rotation
-   * 
+   *
    * The sprite will be drawn at its native 1:1 size if given a distance of 10 units
-   * @param sprite 
-   * @param pos 
+   * @param sprite
+   * @param pos
    * @param scale
-   * @param rot 
+   * @param rot
    */
   public function queueTexturedPlane(sprite:Texture, ?pos:Vec3,
       scale:Float = 1.0, ?rot:Vec3):Void {
@@ -138,7 +159,7 @@ class RendererAbstract {
 
   /**
    * Sets the background color of the renderer
-   * 
+   *
    * @param color the color in RGB format
    */
   public function setBackgroundColor(color:Vec3):Void {
@@ -147,10 +168,26 @@ class RendererAbstract {
 
   /**
    * draws a mesh with its specified transformation and material
-   *  
+   *
    * @param instruction the specification of what and how to draw the mesh
    */
   function drawInstruction(instruction:RenderInstruction, scene:Scene):Void {
     trace("WARNING: drawInstruction not implemented for this target");
+  }
+
+  /**
+   * Called before the render queue is processed
+   * @param scene
+   */
+  public function preRender(scene:Scene):Void {
+    // Default implementation does nothing
+  }
+
+  /**
+   * Called after the render queue is processed
+   * @param scene
+   */
+  public function postRender(scene:Scene):Void {
+    // Default implementation does nothing
   }
 }

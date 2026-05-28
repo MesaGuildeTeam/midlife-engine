@@ -7,9 +7,11 @@ import hl.Bytes;
 
 import sdl.GL;
 
+import recharge.midlife.base.Game;
+import recharge.midlife.base.Scene;
 import recharge.midlife.base.graphics.RendererAbstract.RenderInstruction;
 import recharge.midlife.base.graphics.RendererAbstract;
-import recharge.midlife.base.Scene;
+import recharge.midlife.base.graphics.Shader;
 import recharge.midlife.base.graphics.Texture;
 
 class RendererHL extends RendererAbstract {
@@ -19,22 +21,22 @@ class RendererHL extends RendererAbstract {
 
   var _currentBG:Vec3;
 
-  static inline var stride:Int = 8 * 4;
-
   public function new() {
     super();
 
     // Setup Rendering Rules
     GL.enable(GL.DEPTH_TEST);
     GL.depthFunc(GL.LESS);
-    GL.depthMask(true);
+    //GL.depthMask(false);
 
     GL.enable(GL.BLEND);
-    GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
+    //GL.blendFunc(GL.ONE, GL.ONE);
+    GL.blendFuncSeparate(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA, GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
     GL.enable(GL.CULL_FACE);
     GL.cullFace(GL.BACK);
 
     // GL.polygonMode(GL.FRONT_AND_BACK, GL.LINE);
+    //GL.enable(GL.FRAMEBUFFER_SRGB);
 
     // Prepare buffers
     _vbo = GL.createBuffer();
@@ -54,28 +56,6 @@ class RendererHL extends RendererAbstract {
     GL.useProgram(_currentShader);
     _currentBG = vec3(0.0);
 
-    var atrPos = GL.getAttribLocation(_currentShader, "a_Position");
-    var atrUV = GL.getAttribLocation(_currentShader, "a_UV");
-    var atrNorm = GL.getAttribLocation(_currentShader, "a_Normal");
-
-    if (atrPos != -1) {
-      trace("Identified attribute a_Position");
-      GL.enableVertexAttribArray(atrPos);
-      GL.vertexAttribPointer(atrPos, 3, GL.FLOAT, false, stride, 0);
-    }
-
-    if (atrUV != -1) {
-      trace("Identified attribute a_UV");
-      GL.enableVertexAttribArray(atrUV);
-      GL.vertexAttribPointer(atrUV, 2, GL.FLOAT, false, stride, 3 * 4);
-    }
-
-    if (atrNorm != -1) {
-      trace("Identified attribute a_Normal");
-      GL.enableVertexAttribArray(atrNorm);
-      GL.vertexAttribPointer(atrNorm, 3, GL.FLOAT, false, stride, 5 * 4);
-    }
-
     // Define vertex attribute space
 
     GL.clearColor(0, 0, 0, 1);
@@ -87,6 +67,14 @@ class RendererHL extends RendererAbstract {
   }
 
   function assignSceneUniforms(shader:Program, scene:Scene) {
+    var windowDimensions = GL.getUniformLocation(shader, "u_WindowDimensions");
+    if (windowDimensions != null) {
+      var v = [Game.getInstance()
+        .dimensions.x, Game.getInstance().dimensions.y, 0.0, 0.0];
+      var v4 = Float32Array.fromArray(v).getData();
+      GL.uniform4fv(windowDimensions, Bytes.fromBytes(v4.bytes), 0, 1);
+    }
+
     var ambient = GL.getUniformLocation(shader, "u_Ambient");
     if (ambient != null) {
       var v = [_currentBG.x, _currentBG.y, _currentBG.z, 0.0];
@@ -125,32 +113,47 @@ class RendererHL extends RendererAbstract {
     }
   }
 
+  override function preRender(scene:Scene):Void {
+    GL.enable(GL.DEPTH_TEST);
+    GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
+  }
+
+  override function postRender(scene:Scene):Void { 
+    GL.disable(GL.DEPTH_TEST);
+  }
+
+  var currentShader:Shader = null;
+
   override function drawInstruction(instruction:RenderInstruction,
       scene:Scene) {
-    // Assign shader
-    var currentShader:Program = cast instruction.shader.getShaderProgram();
-    // trace("Using shader program ID " + currentShader);
-    GL.useProgram(currentShader);
+    var shader:Program = cast(instruction.shader.getShaderProgram(), Program);
 
-    // assign scene uniforms
-    assignSceneUniforms(currentShader, scene);
+    // TODO: Figure out this impulse condition to figure out how to optimize
+    // Shader Switching
+
+    // if (currentShader == null || currentShader != instruction.shader) {
+    GL.useProgram(shader);
+    currentShader = instruction.shader;
+    assignSceneUniforms(shader, scene);
+    // }
 
     // Material Uniforms
     var tfArray:Array<Float> = new Array();
     instruction.transformation.copyIntoArray(tfArray, 0);
     var tf32 = Float32Array.fromArray(tfArray).getData();
 
-    var tfUniform = GL.getUniformLocation(currentShader, "u_Transform");
+    var tfUniform = GL.getUniformLocation(shader, "u_Transform");
     if (tfUniform != null)
       GL.uniformMatrix4fv(tfUniform, false, Bytes.fromBytes(tf32.bytes), 0, 1);
 
     // Textures
-    var utUniform = GL.getUniformLocation(currentShader, "u_usesTexture");
+    var utUniform = GL.getUniformLocation(shader, "u_usesTexture");
+    var tUniform = GL.getUniformLocation(shader, "u_Diffuse");
     var diffuse:Null<Texture> = instruction.textures.get(TextureSlot.Diffuse);
-    if (diffuse != null) {
-      // trace("Use texture ID " + diffuse.getTexture());
+    if (diffuse != null && tUniform != null) {
+      GL.uniform1i(tUniform, 0);
+      GL.activeTexture(GL.TEXTURE0);
       GL.bindTexture(GL.TEXTURE_2D, cast(diffuse.getTexture(), sdl.Texture));
-      GL.bindTexture(GL.TEXTURE0, cast(diffuse.getTexture(), sdl.Texture));
 
       if (utUniform != null)
         GL.uniform1i(utUniform, 1);
@@ -159,7 +162,53 @@ class RendererHL extends RendererAbstract {
         GL.uniform1i(utUniform, 0);
     }
 
-    var udcUniform = GL.getUniformLocation(currentShader, "u_DiffuseColor");
+    var diffuse2:Null<Texture> = instruction.textures.get(TextureSlot.Diffuse2);
+    tUniform = GL.getUniformLocation(shader, "u_Diffuse2");
+    utUniform = GL.getUniformLocation(shader, "u_usesTexture2");
+    if (diffuse2 != null && tUniform != null) {
+      GL.uniform1i(tUniform, 1);
+      GL.activeTexture(GL.TEXTURE1);
+      GL.bindTexture(GL.TEXTURE_2D, cast(diffuse2.getTexture(), sdl.Texture));
+
+      if (utUniform != null)
+        GL.uniform1i(utUniform, 1);
+    } else {
+      if (utUniform != null)
+        GL.uniform1i(utUniform, 0);
+    }
+
+    var specular:Null<Texture> = instruction.textures.get(TextureSlot.Specular);
+    tUniform = GL.getUniformLocation(shader, "u_Specular");
+    utUniform = GL.getUniformLocation(shader, "u_usesTexture3");
+    if (specular != null && tUniform != null) {
+      GL.uniform1i(tUniform, 2);
+      GL.activeTexture(GL.TEXTURE2);
+      GL.bindTexture(GL.TEXTURE_2D, cast(specular.getTexture(), sdl.Texture));
+
+      if (utUniform != null)
+        GL.uniform1i(utUniform, 1);
+    } else {
+      if (utUniform != null)
+        GL.uniform1i(utUniform, 0);
+    }
+
+    var normal:Null<Texture> = instruction.textures.get(TextureSlot.Normal);
+    tUniform = GL.getUniformLocation(shader, "u_Normal");
+    utUniform = GL.getUniformLocation(shader, "u_usesTexture4");
+    if (normal != null && tUniform != null) {
+      GL.uniform1i(tUniform, 3);
+      GL.activeTexture(GL.TEXTURE3);
+      GL.bindTexture(GL.TEXTURE_2D, cast(normal.getTexture(), sdl.Texture));
+
+      if (utUniform != null)
+        GL.uniform1i(utUniform, 1);
+    } else {
+      if (utUniform != null)
+        GL.uniform1i(utUniform, 0);
+    }
+
+    // Material Constants
+    var udcUniform = GL.getUniformLocation(shader, "u_DiffuseColor");
     if (udcUniform != null) {
       var c = instruction.diffuseColor != null ? instruction.diffuseColor : vec4(1,
         1, 1, 1);
@@ -167,7 +216,7 @@ class RendererHL extends RendererAbstract {
       GL.uniform4fv(udcUniform, Bytes.fromBytes(v.bytes), 0, 1);
     }
 
-    var usmUniform = GL.getUniformLocation(currentShader, "u_MaterialParams");
+    var usmUniform = GL.getUniformLocation(shader, "u_MaterialParams");
     if (usmUniform != null) {
       var v = Float32Array.fromArray([instruction.shininess, 0.0, 0.0, 0.0])
         .getData();

@@ -48,10 +48,10 @@ class Main {
 }
 ```
 
-When you are ready to compile the code, you can create an hxml with the following:
+When you are ready to compile the code for testing, you can create an hxml with the following:
 
 ```hxml
--L heartbreak-engine
+-L midlife-engine
 # Include any other libraries you may need
 
 -hl bin/hlboot.dat
