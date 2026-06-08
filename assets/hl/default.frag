@@ -58,15 +58,15 @@ layout(location = 3) out vec4 gSpecular;
  */
 vec3 computeDiffuse(vec3 lightPos, vec4 color, vec3 surface) {
     float distance = length(lightPos);
-    float lightOnObj = color.w / distance;
-    // float lightOnObj = color.w / (distance * distance);
+    // float lightOnObj = color.w / distance;
+    float lightOnObj = color.w / (distance * distance);
     vec3 halfway = normalize(v_CameraDir + lightPos);
 
     // Lambert
     float lambert = dot(normalize(v_Normal), normalize(lightPos));
 
     // Lambertian Wrap. Comment first line below if regular lambert is preferred
-    // lambert = mix((lambert + lh) / (1.0 + lh), lambert, clamp(ks, 0.0, 1.0));
+    lambert = mix((lambert + lh) / (1.0 + lh), lambert, clamp(ks, 0.0, 1.0));
     lambert = max(lambert, 0.0);
 
     vec3 diffuse = lightOnObj
@@ -83,9 +83,9 @@ vec3 computeDiffuse(vec3 lightPos, vec4 color, vec3 surface) {
 
 vec3 computeSpecular(vec3 lightPos, vec4 color) {
     float distance = length(lightPos);
-    // float lightOnObj = color.w / (distance * distance);
+    //float lightOnObj = color.w / (distance * distance);
     float lightOnObj = color.w / distance;
-    vec3 halfway = normalize(v_CameraDir + lightPos);
+    vec3 halfway = normalize(-v_CameraDir + lightPos);
 
     // Specular with fresnel
     vec3 specular = u_MaterialParams.x * lightOnObj
@@ -136,8 +136,8 @@ void main() {
     }
 
     // add more color depth by making brighter values than 1 whiter
-    //vec3 color_out = desaturate(colorMix.xyz * u_Ambient.xyz + lighting);
-    vec3 color_out = colorMix.xyz * u_Ambient.xyz + lighting;
+    vec3 color_out = desaturate(colorMix.xyz * u_Ambient.xyz + lighting);
+    //vec3 color_out = colorMix.xyz * u_Ambient.xyz + lighting;
 
     gColor = vec4(color_out, colorMix.a);
     gNormal = vec4(v_Normal, 1.0);

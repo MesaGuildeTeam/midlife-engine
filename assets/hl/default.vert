@@ -32,8 +32,8 @@ void main() {
     gl_Position = screen_pos;
 
     // perspective distance correction and adding depth
-    //gl_Position.w = screen_pos.z / (unitZ);
-    gl_Position.z = log(screen_pos.z + 1.0) / log(60.0 + 1.0);
+    gl_Position.w = screen_pos.z / (unitZ);
+    gl_Position.z = -log(screen_pos.z + 1.0) / log(60.0 + 1.0);
 
     // Correct width to game screen ratio and add screen space
     gl_Position.xy = gl_Position.xy / vec2(160.0, 120.0) * (pixPerUnit);

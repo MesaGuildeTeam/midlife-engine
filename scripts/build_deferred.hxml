@@ -19,6 +19,7 @@
 # Configure game window and similar settings
 -D engine-gametitle=Midlife Engine Examples
 -D midlife-deferred
+-D midlife-canvas-scaling
 
 --resource assets/hl/default.vert@midlife/default.vert
 --resource assets/hl/default.frag@midlife/default.frag

@@ -22,7 +22,7 @@ class HelloWorld extends Node {
 
   var time:Float = 0.0;
 
-  static var mesh:Mesh = new SurfaceNet(new BoxSDF(vec3(1), 0.2), 32);
+  static var mesh:Mesh = new SurfaceNet(new BoxSDF(vec3(1.0), 0.2), 32);
 
   // var mesh:Mesh = new Cube();
   var texture:Texture = new Texture("assets/placeholder.png");
@@ -42,16 +42,18 @@ class HelloWorld extends Node {
   public override function draw():Void {
     lightId = Game.getInstance()
       .getScene()
-      .lights.setLight(vec4(0, 0, -1, 0), vec4(1, 1, 1, 1), lightId);
+      .lights.setLight(vec4(1, 1, -1, 0), vec4(1, 1, 1, 2), lightId);
 
     // lightId2 = Game.getInstance()
     //   .getScene()
     //   .lights.setLight(vec4(-2, -2, 8, 1), vec4(0, 0, 1, 2), lightId2);
 
     // Game.getInstance().getRenderer().pushTexture(texture);
+    Game.getInstance().getRenderer().pushShininess(1.0);
+    Game.getInstance().getRenderer().pushDiffuseColor(vec4(0.5, 0.0, 0.0, 1.0));
     Game.getInstance()
       .getRenderer()
-      .queueMesh(mesh, vec3(0, 0, 10), vec3(1), vec3(0, time, 0));
+      .queueMesh(mesh, vec3(0, 0, 10), vec3(1), vec3(-30, time, 0));
 
     // Game.getInstance().getRenderer().queueMesh(mesh2, vec3(0, -2, 10), vec3(1), vec3(0));
 
