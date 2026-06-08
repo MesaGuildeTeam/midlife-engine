@@ -64,9 +64,9 @@ class World extends HashedNode {
     super.update(dt);
 
     _dtCounter += dt;
-    static var _dtStep:Float = 0.016 / 2; // 60 FPS
-    var counter:Int = 4;
+    static var _dtStep:Float = 0.008 / 2; // 60 FPS two times
 
+    // Thread Guard Top
     #if sys
     static var threadLock:Bool = false;
     if (threadLock) return;
@@ -75,25 +75,41 @@ class World extends HashedNode {
       threadLock = true;
     #end
 
+    // Actual Code
     try {
+
+    var counter:Int = 4;
     // This should run no more than 4 times max 240FPS
     while (_dtCounter >= _dtStep && counter > 0) {
       counter--;
       _dtCounter -= _dtStep;
+
+      // Broad Phase Separation followed by Narrow Phase Collision Checks
       for (keys in getHashKeys())
         if (getChildrenHash(keys).length != 0)
           iteratePhysics(_dtStep, getChildrenHash(keys));
+
+      // Now we can iterate Kinematics on all objects
+      for (object in getChildren()) {
+        if (!Std.isOfType(object, GameObject))
+          continue;
+
+        var go:GameObject = cast(object, GameObject);
+        go.computeKinematics(_dtStep);
+      }
     }
 
     } catch(e) {
       trace(e.message);
     }
 
+    // Thread Guard Bottom
     #if sys
       threadLock = false;
     });
     #end
   }
+
 
   function iteratePhysics(dt:Float, children:Array<Node>):Void {
     var gameObjects:Array<GameObject> = [];
@@ -107,9 +123,7 @@ class World extends HashedNode {
     for (i in 0...gameObjects.length) {
       var childA:GameObject = gameObjects[i];
 
-      var hasCollided:Bool = false;
-
-      for (j in i...gameObjects.length) {
+      for (j in i+1...gameObjects.length) {
         if (i == j)
           continue;
         var childB:GameObject = gameObjects[j];
@@ -120,8 +134,6 @@ class World extends HashedNode {
         if (depth > 0)
           continue;
 
-        hasCollided = true;
-
         // Compute Collisions
         var elasticity:Float = 0.8;
         computeNewVelocity(childA, childB, elasticity);
@@ -130,9 +142,6 @@ class World extends HashedNode {
         childA.onCollision(childB);
         childB.onCollision(childA);
       }
-
-      if (!childA.isStatic)
-        childA.computeKinematics(dt, hasCollided);
     }
   }
 
