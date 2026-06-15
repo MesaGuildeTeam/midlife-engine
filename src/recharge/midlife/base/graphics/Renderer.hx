@@ -12,6 +12,8 @@ typedef Renderer = recharge.midlife.hl.RendererDeferredHL;
 #else
 typedef Renderer = recharge.midlife.hl.RendererHL;
 #end
+#elseif js
+typedef Renderer = recharge.midlife.js.RendererJS;
 #else
 typedef Renderer = RendererAbstract;
 #end

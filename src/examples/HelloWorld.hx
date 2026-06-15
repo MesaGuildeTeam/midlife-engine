@@ -1,7 +1,5 @@
 package examples;
 
-import sys.thread.EventLoop.NextEventTime;
-
 import recharge.midlife.base.Game;
 import recharge.midlife.base.physics.GameObject;
 import recharge.midlife.base.Node;

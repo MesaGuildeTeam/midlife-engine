@@ -1,0 +1,30 @@
+# Use this build process when testing your game with hashlink
+
+# Uncomment this line. This is just for the test inside the source code
+#-L heartbreak-engine
+-L vector-math
+#-L hlsdl
+#-L format
+# Add any other required libraries
+
+# Specify platform with target and library
+# This is one example using raylib
+-js bin/midlife.js
+-D js-es=6
+--dce full
+
+# Include your initial scene
+#Scene
+-D engine-initialscene=ExampleTraverser
+
+# Configure game window and similar settings
+-D engine-gametitle=Midlife Engine Examples
+
+--resource assets/hl/default.vert@midlife/default.vert
+--resource assets/hl/default.frag@midlife/default.frag
+--resource assets/hl/ui.frag@midlife/ui.frag
+--resource assets/hl/ui.vert@midlife/ui.vert
+--resource assets/hl/thick_8x8.png@midlife/default_font.png
+
+-p src
+--main Examples

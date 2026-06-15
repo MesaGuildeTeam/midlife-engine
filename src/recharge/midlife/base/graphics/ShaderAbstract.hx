@@ -29,5 +29,12 @@ class ShaderAbstract {
     return _program;
   }
 
-  public static var defaultShader:Shader = new Shader();
+  //public static var defaultShader:ShaderAbstract = new Shader();
+  public static var defaultShader(get, never):ShaderAbstract;
+
+  public static function get_defaultShader():ShaderAbstract {
+    static var shader:Shader = new Shader();
+
+    return cast shader;
+  }
 }

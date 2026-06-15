@@ -1,4 +1,4 @@
---json tmp/docs.json
+--xml tmp/docs.xml
 -D doc-gen
 --interp
 #-hl docs.hl

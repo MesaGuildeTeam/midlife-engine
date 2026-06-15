@@ -24,7 +24,7 @@ class RenderInstruction {
   public var text:String;
 
   public var transformation:Mat4 = mat4(1.0);
-  public var shader:Shader;
+  public var shader:ShaderAbstract;
   public var textures:Map<TextureSlot, Null<Texture>>;
   public var isTransparent:Bool = false;
   public var diffuseColor:Vec4 = vec4(1.0);
@@ -33,7 +33,7 @@ class RenderInstruction {
 
   public function new() {
     textures = new Map();
-    shader = Shader.defaultShader;
+    shader = ShaderAbstract.defaultShader;
   }
 
   public function getZ():Float {

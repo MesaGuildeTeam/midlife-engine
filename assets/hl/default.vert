@@ -1,21 +1,21 @@
-#version 330 core
+#version 300 es
 
 precision mediump float;
 
-attribute vec3 a_Position;
-attribute vec2 a_UV;
-attribute vec3 a_Normal;
+in vec3 a_Position;
+in vec2 a_UV;
+in vec3 a_Normal;
 
 uniform mat4 u_Transform;
 uniform mat4 u_Camera;
 uniform vec4 u_WindowDimensions;
 
-varying vec3 v_Position;
-varying vec2 v_UV;
-varying vec3 v_Normal;
-varying vec3 v_ScreenNormal;
-varying vec3 v_CameraDir;
-varying vec3 v_CameraPos;
+out vec3 v_Position;
+out vec2 v_UV;
+out vec3 v_Normal;
+out vec3 v_ScreenNormal;
+out vec3 v_CameraDir;
+out vec3 v_CameraPos;
 
 void main() {
     float pixPerUnit = 16.0;

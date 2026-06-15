@@ -1,3 +1,5 @@
+#version 300 es
+precision mediump float;
 /**
  * The default fragment shader for rendering objects in a scene.
  *
@@ -11,8 +13,6 @@
  *
  * @author Roberto Selles
  */
-
-#version 330 core
 
 // Varying Variables from Mesh
 in vec3 v_Position;

@@ -1,9 +1,0 @@
-# Import engine dependencies
--L vector-math
-
-# Prepare the code for unit testing 
---js bin/midlife.js
-#-dce full
--D js-es=6
--p src
-recharge.midlife.base

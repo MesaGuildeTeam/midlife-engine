@@ -8,6 +8,8 @@ package recharge.midlife.base.graphics;
 
 #if hl
 typedef Shader = recharge.midlife.hl.ShaderHL;
+#elseif js
+typedef Shader = recharge.midlife.js.ShaderJS;
 #else
 typedef Shader = ShaderAbstract;
 #end
