@@ -40,8 +40,8 @@ Offer compatibility with the RetroLib API but build natively to
 
 - [x] Although resizable, a standard game viewport and window is 640x480px
 - [x] Assuming no rotation or camera reconfiguration, if the object has a distance of 10 each unit should be 1 pixel at standard window size
-- [ ] Graphics will scale as the window resizes keeping the ratio to the best of its ability
-- [ ] UI should not be required to scale drastically
+- [x] Graphics will scale as the window resizes keeping the ratio to the best of its ability
+- [x] UI should not be required to scale drastically
 
 ## UI
 
@@ -56,18 +56,18 @@ Offer compatibility with the RetroLib API but build natively to
 ## Input
 
 - [x] Input manager itself is generic but can also read rising/falling edges of inputs
-- [ ] The following inputs are pre-defined for the game engine
+- [x] The following inputs are pre-defined for the game engine
   - [x] D-pad
   - [x] A Button
-  - [ ] B Button
-  - [ ] X Button
-  - [ ] Y Button
-  - [ ] Shoulder Buttons
-  - [ ] Pause
+  - [x] B Button
+  - [x] X Button
+  - [x] Y Button
+  - [x] Shoulder Buttons
+  - [x] Pause
 
 ## Files
 
-- [ ] File loading should be simplified by combining external and embedded file
+- [x] File loading should be simplified by combining external and embedded file
 reading into one class to read file data from
 - [ ] You can read files with the following priority:
   - [x] Embedded Files
