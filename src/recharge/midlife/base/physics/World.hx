@@ -4,7 +4,7 @@ import recharge.midlife.base.physics.GameObject;
 import recharge.midlife.base.sdf.SDF;
 import recharge.midlife.base.Node;
 
-class World extends Node {
+class World extends HashedNode {
   @:keep
   static var registry = recharge.midlife.base.NodeFactory.register(World);
 
@@ -41,13 +41,18 @@ class World extends Node {
    * @return The object at the position, or null if no object is found.
    */
   public function hasObjectAt(refObject:GameObject):GameObject {
-    var children = getChildren();
-    for (child in children) {
-      if (!Std.isOfType(child, GameObject))
+    var hashes:Array<String> = _hashFunction(refObject);
+    for (k in hashes) {
+      var list:Array<Node> = getChildrenHash(k);
+      if (list == null)
         continue;
-      var gameObject:GameObject = cast(child, GameObject);
-      if (checkCollision(refObject, gameObject) < 0.0) {
-        return gameObject;
+      //trace(list, k);
+      for (child in list) {
+        if (!Std.isOfType(child, GameObject))
+          continue;
+        var go:GameObject = cast(child, GameObject);
+        if (checkCollision(refObject, go) < 0.0)
+          return go;
       }
     }
     return null;
@@ -59,18 +64,57 @@ class World extends Node {
     super.update(dt);
 
     _dtCounter += dt;
-    static var _dtStep:Float = 0.016 / 2; // 60 FPS
+    static var _dtStep:Float = 0.008 / 2; // 60 FPS two times
 
-    while (_dtCounter >= _dtStep) {
+    // Thread Guard Top
+    #if sys
+    static var threadLock:Bool = false;
+    if (threadLock) return;
+
+    sys.thread.Thread.create(() -> {
+      threadLock = true;
+    #end
+
+    // Actual Code
+    try {
+
+    var counter:Int = 4;
+    // This should run no more than 4 times max 240FPS
+    while (_dtCounter >= _dtStep && counter > 0) {
+      counter--;
       _dtCounter -= _dtStep;
-      iteratePhysics(_dtStep);
+
+      // Broad Phase Separation followed by Narrow Phase Collision Checks
+      for (keys in getHashKeys())
+        if (getChildrenHash(keys).length != 0)
+          iteratePhysics(_dtStep, getChildrenHash(keys));
+
+      // Now we can iterate Kinematics on all objects
+      for (object in getChildren()) {
+        if (!Std.isOfType(object, GameObject))
+          continue;
+
+        var go:GameObject = cast(object, GameObject);
+        go.computeKinematics(_dtStep);
+      }
     }
+
+    } catch(e) {
+      trace(e.message);
+    }
+
+    // Thread Guard Bottom
+    #if sys
+      threadLock = false;
+    });
+    #end
   }
 
-  function iteratePhysics(dt:Float):Void {
+
+  function iteratePhysics(dt:Float, children:Array<Node>):Void {
     var gameObjects:Array<GameObject> = [];
 
-    for (child in getChildren()) {
+    for (child in children) {
       if (!Std.isOfType(child, GameObject))
         continue;
       gameObjects.push(cast(child, GameObject));
@@ -79,9 +123,7 @@ class World extends Node {
     for (i in 0...gameObjects.length) {
       var childA:GameObject = gameObjects[i];
 
-      var hasCollided:Bool = false;
-
-      for (j in i...gameObjects.length) {
+      for (j in i+1...gameObjects.length) {
         if (i == j)
           continue;
         var childB:GameObject = gameObjects[j];
@@ -92,8 +134,6 @@ class World extends Node {
         if (depth > 0)
           continue;
 
-        hasCollided = true;
-
         // Compute Collisions
         var elasticity:Float = 0.8;
         computeNewVelocity(childA, childB, elasticity);
@@ -102,8 +142,6 @@ class World extends Node {
         childA.onCollision(childB);
         childB.onCollision(childA);
       }
-
-      childA.computeKinematics(dt, hasCollided);
     }
   }
 

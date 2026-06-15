@@ -36,7 +36,7 @@ class RendererHL extends RendererAbstract {
     GL.cullFace(GL.BACK);
 
     // GL.polygonMode(GL.FRONT_AND_BACK, GL.LINE);
-    //GL.enable(GL.FRAMEBUFFER_SRGB);
+    GL.enable(GL.FRAMEBUFFER_SRGB);
 
     // Prepare buffers
     _vbo = GL.createBuffer();
@@ -113,12 +113,12 @@ class RendererHL extends RendererAbstract {
     }
   }
 
-  override function preRender(scene:Scene):Void {
+  override public function preRender(scene:Scene):Void {
     GL.enable(GL.DEPTH_TEST);
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
   }
 
-  override function postRender(scene:Scene):Void { 
+  override function postRender(scene:Scene):Void {
     GL.disable(GL.DEPTH_TEST);
   }
 

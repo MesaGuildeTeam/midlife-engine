@@ -137,6 +137,7 @@ class GameHL extends recharge.midlife.base.GameAbstract {
       var dt = (currentTime - previousTime);
       this.updateScene(dt);
 
+      _renderer.preRender(_currentScene);
       this.drawScene();
       _renderer.flush(_currentScene);
       window.present();

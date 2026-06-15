@@ -26,6 +26,7 @@ class RenderInstruction {
   public var transformation:Mat4 = mat4(1.0);
   public var shader:Shader;
   public var textures:Map<TextureSlot, Null<Texture>>;
+  public var isTransparent:Bool = false;
   public var diffuseColor:Vec4 = vec4(1.0);
   public var shininess:Float = 0.0;
   public var shinePower:Float = 5.0;
@@ -71,7 +72,7 @@ class RendererAbstract {
     });
 
     // Call pre-render hook
-    preRender(scene);
+    //preRender(scene);
 
     // Iterate and clean
     for (i in _renderQueue)
@@ -120,7 +121,10 @@ class RendererAbstract {
     if (_useUITarget) {
       _uiRenderQueue.push(_constructingInstruction);
     } else {
-      _renderQueue.push(_constructingInstruction);
+      if (_constructingInstruction.isTransparent)
+        _renderQueue.push(_constructingInstruction);
+      else
+      drawInstruction(_constructingInstruction, Game.getInstance().getScene());
     }
 
     _useUITarget = false;
@@ -129,6 +133,7 @@ class RendererAbstract {
 
   public function pushTexture(texture:Texture,
       slot:TextureSlot = TextureSlot.Diffuse):Void {
+    _constructingInstruction.isTransparent = _constructingInstruction.isTransparent ? true : texture.isTransparent;
     _constructingInstruction.textures.set(slot, texture);
   }
 

@@ -14,6 +14,7 @@ class GameObject extends Node {
 
   public var _velocity:Vec3;
   public var _acceleration:Vec3;
+  public var _collided:Bool;
 
   static inline var eps = 0.03;
 
@@ -68,6 +69,7 @@ class GameObject extends Node {
     velocity = new Vec3(0, 0, 0);
     acceleration = new Vec3(0, 0, 0);
     isStatic = false;
+    _collided = false;
 
     if (params != null) {
       if (params.mass != null)
@@ -83,7 +85,9 @@ class GameObject extends Node {
     }
   }
 
-  public function onCollision(obj:GameObject, ?preComputeNewVel:Bool):Void {}
+  public function onCollision(obj:GameObject, ?preComputeNewVel:Bool):Void {
+    _collided = true;
+  }
 
   override public function init() {
     super.init();
@@ -102,19 +106,24 @@ class GameObject extends Node {
     super.update(dt);
   }
 
-  public function computeKinematics(dt:Float, collision:Bool):Void {
-    var prevPos = position;
+  public function computeKinematics(dt:Float):Void {
+    if (isStatic)
+      return;
 
-    var parentAsWorld:World = cast(parent, World);
-    var accSum = acceleration + parentAsWorld.gravity;
-
-    if (isStatic || isResting) {
+    if (isResting) {
       acceleration = vec3(0);
       velocity = vec3(0);
     }
 
-    if (isStatic || (isResting && collision))
+    if (isResting && _collided) {
+      _collided = false;
       return;
+    }
+
+    var prevPos = position;
+
+    var parentAsWorld:World = cast(parent, World);
+    var accSum = acceleration + parentAsWorld.gravity;
 
     position += velocity * _dtStep + accSum * _dtStep * _dtStep / 2;
     velocity += accSum * _dtStep;
