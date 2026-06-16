@@ -24,14 +24,14 @@ import recharge.midlife.base.graphics.Mesh;
 class SurfaceNet extends Mesh {
   /**
    * Takes the 4 corners of a voxel face and creates a quad for the mesh based on the SDF
-   * 
+   *
    * Each vertex is projected onto the surface of the SDF and given a normal and UV coordinate based on the SDF
-   * 
-   * @param v1 
-   * @param v2 
-   * @param v3 
-   * @param v4 
-   * @param sdf 
+   *
+   * @param v1
+   * @param v2
+   * @param v3
+   * @param v4
+   * @param sdf
    */
   inline function createVoxelFace(v1:Vec3, v2:Vec3, v3:Vec3, v4:Vec3,
       sdf:SDF):Void {
@@ -95,7 +95,7 @@ class SurfaceNet extends Mesh {
 
           if (sampleDistance[Std.int((z - 1) * res * res
             + y * res
-            + x)] == false) {
+            + x)] != true) {
             createVoxelFace(pos
               + dt * vec3(-0.5, -0.5, -0.5),
               pos
@@ -108,7 +108,7 @@ class SurfaceNet extends Mesh {
 
           if (sampleDistance[Std.int((z + 1) * res * res
             + y * res
-            + x)] == false) {
+            + x)] != true) {
             createVoxelFace(pos
               + dt * vec3(0.5, -0.5, 0.5),
               pos
@@ -121,7 +121,7 @@ class SurfaceNet extends Mesh {
 
           if (sampleDistance[Std.int(z * res * res
             + y * res
-            + (x - 1))] == false) {
+            + (x - 1))] != true) {
             createVoxelFace(pos
               + dt * vec3(-0.5, -0.5, -0.5),
               pos
@@ -135,7 +135,7 @@ class SurfaceNet extends Mesh {
           if (sampleDistance[Std.int(z * res * res
             + y * res
             + x
-            + 1)] == false) {
+            + 1)] != true) {
             createVoxelFace(pos
               + dt * vec3(0.5, 0.5, -0.5),
               pos
@@ -148,7 +148,7 @@ class SurfaceNet extends Mesh {
 
           if (sampleDistance[Std.int(z * res * res
             + (y + 1) * res
-            + x)] == false) {
+            + x)] != true) {
             createVoxelFace(pos
               + dt * vec3(-0.5, 0.5, -0.5),
               pos
@@ -160,7 +160,7 @@ class SurfaceNet extends Mesh {
 
           if (sampleDistance[Std.int(z * res * res
             + (y - 1) * res
-            + x)] == false) {
+            + x)] != true) {
             createVoxelFace(pos
               + dt * vec3(-0.5, -0.5, -0.5),
               pos
