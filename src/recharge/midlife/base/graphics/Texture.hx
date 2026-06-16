@@ -15,6 +15,8 @@ enum TextureSlot {
 
 #if hl
 typedef Texture = recharge.midlife.hl.TextureHL;
+#elseif js
+typedef Texture = recharge.midlife.js.TextureJS;
 #else
 typedef Texture = TextureAbstract;
 #end

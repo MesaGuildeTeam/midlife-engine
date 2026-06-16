@@ -1,5 +1,8 @@
 package recharge.midlife.js;
 
+import js.Browser;
+import js.html.Event;
+
 import recharge.midlife.base.input.InputManager;
 import recharge.midlife.base.input.Input;
 import recharge.midlife.base.GameAbstract;
@@ -33,43 +36,51 @@ class GameJS extends GameAbstract {
 
     // Populate InputManager
     InputManager.getInstance().setInput("DPadX", new Input(() -> {
-      return InputParamMap.get(100);
+      return InputParamMap.get(100) != null ? InputParamMap.get(100) : 0.0;
     }), new Input(() -> {
-      return InputParamMap.get(97);
+      return InputParamMap.get(97) != null ? InputParamMap.get(97) : 0.0;
     }));
     InputManager.getInstance().setInput("DPadY", new Input(() -> {
-      return InputParamMap.get(119);
+      return InputParamMap.get(119) != null ? InputParamMap.get(119) : 0.0;
     }), new Input(() -> {
-      return InputParamMap.get(115);
+      return InputParamMap.get(115) != null ? InputParamMap.get(115) : 0.0;
     }));
 
     InputManager.getInstance().setInput("LeftShoulder", new Input(() -> {
-      return InputParamMap.get(113);
+      return InputParamMap.get(113) != null ? InputParamMap.get(113) : 0.0;
     }));
 
     InputManager.getInstance().setInput("RightShoulder", new Input(() -> {
-      return InputParamMap.get(101);
+      return InputParamMap.get(101) != null ? InputParamMap.get(101) : 0.0;
     }));
 
     InputManager.getInstance().setInput("Start", new Input(() -> {
-      return InputParamMap.get(27);
+      return InputParamMap.get(27) != null ? InputParamMap.get(27) : 0.0;
     }));
     InputManager.getInstance().setInput("Select", new Input(() -> {
-      return InputParamMap.get(8);
+      return InputParamMap.get(8) != null ? InputParamMap.get(8) : 0.0;
     }));
 
     InputManager.getInstance().setInput("ButtonA", new Input(() -> {
-      return InputParamMap.get(106);
+      return InputParamMap.get(106) != null ? InputParamMap.get(106) : 0.0;
     }));
     InputManager.getInstance().setInput("ButtonB", new Input(() -> {
-      return InputParamMap.get(107);
+      return InputParamMap.get(107) != null ? InputParamMap.get(107) : 0.0;
     }));
     InputManager.getInstance().setInput("ButtonX", new Input(() -> {
-      return InputParamMap.get(117);
+      return InputParamMap.get(117) != null ? InputParamMap.get(117) : 0.0;
     }));
     InputManager.getInstance().setInput("ButtonY", new Input(() -> {
-      return InputParamMap.get(105);
+      return InputParamMap.get(105) != null ? InputParamMap.get(105) : 0.0;
     }));
+
+    Browser.window.addEventListener("keydown", function(event:Dynamic) {
+      InputParamMap.set(event.key.charCodeAt(0), 1.0);
+    });
+
+    Browser.window.addEventListener("keyup", function(event:Dynamic) {
+      InputParamMap.set(event.key.charCodeAt(0), 0.0);
+    });
 
     js.Browser.window.setTimeout(gameLoop, 10);
   }

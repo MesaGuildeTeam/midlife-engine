@@ -32,7 +32,7 @@ class RendererJS extends RendererAbstract {
     Canvas = cast Browser.document.getElementById("midlife-canvas");
     GL = cast Canvas.getContext("webgl2", {
       alpha: false,
-      antialias: true,
+      antialias: false,
       colorSpace: "srgb",
       powerPreference: "high-performance"
     });
@@ -157,7 +157,7 @@ class RendererJS extends RendererAbstract {
     if (diffuse != null && tUniform != null) {
       GL.uniform1i(tUniform, 0);
       GL.activeTexture(GL2.TEXTURE0);
-      GL.bindTexture(GL2.TEXTURE_2D, cast diffuse.getTexture());
+      GL.bindTexture(GL2.TEXTURE_2D, diffuse.getTextureJS());
 
       if (utUniform != null)
         GL.uniform1i(utUniform, 1);
@@ -173,7 +173,7 @@ class RendererJS extends RendererAbstract {
     if (diffuse2 != null && tUniform != null) {
       GL.uniform1i(tUniform, 1);
       GL.activeTexture(GL2.TEXTURE1);
-      GL.bindTexture(GL2.TEXTURE_2D, cast diffuse2.getTexture());
+      GL.bindTexture(GL2.TEXTURE_2D, diffuse2.getTextureJS());
 
       if (utUniform != null)
         GL.uniform1i(utUniform, 1);
@@ -188,7 +188,7 @@ class RendererJS extends RendererAbstract {
     if (specular != null && tUniform != null) {
       GL.uniform1i(tUniform, 2);
       GL.activeTexture(GL2.TEXTURE2);
-      GL.bindTexture(GL2.TEXTURE_2D, cast specular.getTexture());
+      GL.bindTexture(GL2.TEXTURE_2D, specular.getTextureJS());
 
       if (utUniform != null)
         GL.uniform1i(utUniform, 1);
@@ -203,7 +203,7 @@ class RendererJS extends RendererAbstract {
     if (normal != null && tUniform != null) {
       GL.uniform1i(tUniform, 3);
       GL.activeTexture(GL2.TEXTURE3);
-      GL.bindTexture(GL2.TEXTURE_2D, cast normal.getTexture());
+      GL.bindTexture(GL2.TEXTURE_2D, normal.getTextureJS());
 
       if (utUniform != null)
         GL.uniform1i(utUniform, 1);

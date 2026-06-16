@@ -1,4 +1,4 @@
-//precision mediump float;
+precision mediump float;
 
 // Varying Variables from Mesh
 varying vec3 v_Position;
@@ -22,10 +22,10 @@ uniform vec4 u_DiffuseColor;
 
 void main() {
     gl_FragColor = vec4(1.0);
-    
+
     if (u_usesTexture[0] == 1)
         gl_FragColor = texture2D(u_Diffuse, v_UV);
-    
+
     if (gl_FragColor.a == 0.0) {
         discard;
     }
