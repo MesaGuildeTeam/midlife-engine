@@ -13,6 +13,7 @@ class TextureJS extends TextureAbstract {
   static var pathHash:Map<String, Texture> = new Map();
 
   var _textureJS:Texture;
+  var file:FileStream;
 
   function getImageDimensions(bytes:haxe.io.Bytes):Vec2 {
     var width:Int = 0;
@@ -31,7 +32,11 @@ class TextureJS extends TextureAbstract {
       return;
     }
 
-    var file = new FileStream(FileMode.READ, _path);
+    if (file == null)
+      file = new FileStream(FileMode.READ, _path);
+    if (file.isLoaded != true)
+      return;
+
     var data:haxe.io.Bytes = file.getDataBytes();
 
     _dimensions = getImageDimensions(data);

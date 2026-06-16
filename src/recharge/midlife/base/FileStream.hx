@@ -26,8 +26,12 @@ class FileStream {
   private var _path:String;
   private var _type:FileType;
 
+  private var _httpData:haxe.Http;
+  public var isLoaded:Bool;
+
   public function new(mode:FileMode, ?path:String) {
     _mode = mode;
+    isLoaded = false;
     _path = path != null ? path : "";
     if (path != null) {
       open(path);
@@ -43,6 +47,7 @@ class FileStream {
 
       _type = FileType.EMBEDDED;
       _path = path;
+      isLoaded = true;
 
       return true;
     }
@@ -58,8 +63,22 @@ class FileStream {
 
       _type = FileType.ASSET;
       _path = path;
+      isLoaded = true;
       return true;
     }
+    #else
+    var request = new haxe.Http("/" + path);
+    trace("Sending GET request to", request.url);
+    request.async = true;
+
+    request.onBytes = function(_:Dynamic) {
+      _type = FileType.ASSET;
+      _path = path;
+      _httpData = request;
+      isLoaded = true;
+    }
+
+    request.request(false);
     #end
 
     return false;
@@ -88,6 +107,9 @@ class FileStream {
     #if sys
     if (_type == FileType.ASSET)
       return File.getContent("./" + _path);
+    #else
+    if (_type == FileType.ASSET)
+      return _httpData.responseData;
     #end
 
     throw "ERROR: No file has been loaded into FileStream yet";
@@ -100,6 +122,10 @@ class FileStream {
     #if sys
     if (_type == FileType.ASSET)
       return File.getBytes("./" + _path);
+
+    #else
+    if (_type == FileType.ASSET)
+      return _httpData.responseBytes;
     #end
 
 

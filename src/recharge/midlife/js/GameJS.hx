@@ -3,6 +3,8 @@ package recharge.midlife.js;
 import js.Browser;
 import js.html.Event;
 
+import haxe.Timer;
+
 import recharge.midlife.base.input.InputManager;
 import recharge.midlife.base.input.Input;
 import recharge.midlife.base.GameAbstract;
@@ -10,7 +12,6 @@ import recharge.midlife.base.graphics.Renderer;
 
 class GameJS extends GameAbstract {
   static var InputParamMap:Map<Int, Float> = new Map();
-
 
   public static function getInstance():GameAbstract {
     if (GameAbstract._instance == null)
@@ -20,13 +21,18 @@ class GameJS extends GameAbstract {
   }
 
   function gameLoop():Void {
+    static var currentTime = Timer.stamp();
+    static var previousTime = 0.0;
 
-    this.updateScene(0.01);
+    previousTime = currentTime;
+    currentTime = Timer.stamp();
+    var dt = (currentTime - previousTime);
+
+    this.updateScene(dt);
 
     _renderer.preRender(_currentScene);
     this.drawScene();
     _renderer.flush(_currentScene);
-    //window.present();
 
     js.Browser.window.setTimeout(gameLoop, 10);
   }
