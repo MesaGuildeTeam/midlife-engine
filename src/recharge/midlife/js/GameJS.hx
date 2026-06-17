@@ -81,11 +81,20 @@ class GameJS extends GameAbstract {
     }));
 
     Browser.window.addEventListener("keydown", function(event:Dynamic) {
-      InputParamMap.set(event.key.charCodeAt(0), 1.0);
+      trace("Key Pressed", event.keyCode);
+      if (event.key.length == 1) {
+        InputParamMap.set(event.key.charCodeAt(0), 1.0);
+      } else {
+        InputParamMap.set(event.keyCode, 1.0);
+      }
     });
 
     Browser.window.addEventListener("keyup", function(event:Dynamic) {
-      InputParamMap.set(event.key.charCodeAt(0), 0.0);
+      if (event.key.length == 1) {
+        InputParamMap.set(event.key.charCodeAt(0), 0.0);
+      } else {
+        InputParamMap.set(event.keyCode, 0.0);
+      }
     });
 
     js.Browser.window.setTimeout(gameLoop, 10);
