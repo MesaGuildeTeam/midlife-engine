@@ -81,7 +81,6 @@ class GameJS extends GameAbstract {
     }));
 
     Browser.window.addEventListener("keydown", function(event:Dynamic) {
-      trace("Key Pressed", event.keyCode);
       if (event.key.length == 1) {
         InputParamMap.set(event.key.charCodeAt(0), 1.0);
       } else {

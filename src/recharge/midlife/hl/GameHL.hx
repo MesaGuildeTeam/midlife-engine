@@ -118,7 +118,6 @@ class GameHL extends recharge.midlife.base.GameAbstract {
         }
 
         if (event.type == EventType.KeyDown) {
-          trace(event.keyCode);
           processKeyboard(1.0, event.keyCode);
         }
 
