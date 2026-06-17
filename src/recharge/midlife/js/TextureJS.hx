@@ -47,12 +47,24 @@ class TextureJS extends TextureAbstract {
 
     var jsTypedArray = new js.lib.Uint8Array(pixelData.getData());
 
+    // Convert BRGA to RGBA
+    var i = 0;
+    while (i < jsTypedArray.length) {
+        var b = jsTypedArray[i];
+        var g = jsTypedArray[i + 1];
+        var r = jsTypedArray[i + 2];
+        var a = jsTypedArray[i + 3];
+        jsTypedArray[i]     = r;
+        jsTypedArray[i + 1] = g;
+        jsTypedArray[i + 2] = b;
+        jsTypedArray[i + 3] = a;
+        i += 4;
+    }
+
     var texture = GL.createTexture();
     GL.bindTexture(GL2.TEXTURE_2D, texture);
-    GL.texImage2D(GL2.TEXTURE_2D, 0, GL2.RGBA, Std.int(_dimensions.x), Std.int(_dimensions.y), 0, GL2.RGBA, GL2.UNSIGNED_BYTE, jsTypedArray);
-    //GL.texImage2D(GL2.TEXTURE_2D, 0, GL2.RGBA, Std.int(_dimensions.x),
-    //  Std.int(_dimensions.y), 0, GL2.RGBA, GL2.UNSIGNED_BYTE,
-    //  js.lib.Uint8Array(pixelData));
+    GL.texImage2D(GL2.TEXTURE_2D, 0, GL2.RGBA, Std.int(_dimensions.x),
+      Std.int(_dimensions.y), 0, GL2.RGBA, GL2.UNSIGNED_BYTE, jsTypedArray);
     GL.texParameteri(GL2.TEXTURE_2D, GL2.TEXTURE_MIN_FILTER, GL2.NEAREST);
     GL.texParameteri(GL2.TEXTURE_2D, GL2.TEXTURE_MAG_FILTER, GL2.NEAREST);
 
