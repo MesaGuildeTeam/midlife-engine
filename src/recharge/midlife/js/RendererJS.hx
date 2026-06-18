@@ -36,6 +36,12 @@ class RendererJS extends RendererAbstract {
       colorSpace: "srgb",
       powerPreference: "high-performance"
     });
+    trace("DEBUG: Canvas identified");
+
+    // Integrate Extensions
+    var ext = GL.getExtension("EXT_color_buffer_float");
+    if (ext == null)
+      trace("WARNING: One of your extensions are not recognized");
 
     // Setup Rendering Rules
     GL.enable(GL2.DEPTH_TEST);
@@ -72,7 +78,7 @@ class RendererJS extends RendererAbstract {
   }
 
   override public function setBackgroundColor(color:Vec3):Void {
-    GL.clearColor(color.x, color.y, color.z, 1);
+    GL.clearColor(Math.pow(color.x, 0.4545), Math.pow(color.y, 0.4545), Math.pow(color.z, 0.4545), 1);
     _currentBG = color;
   }
 

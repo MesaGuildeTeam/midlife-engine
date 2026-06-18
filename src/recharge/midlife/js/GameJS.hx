@@ -38,7 +38,7 @@ class GameJS extends GameAbstract {
   }
 
   public override function run():Void {
-    _renderer = new Renderer();
+    _renderer = new RendererDeferredJS();
 
     // Populate InputManager
     InputManager.getInstance().setInput("DPadX", new Input(() -> {
