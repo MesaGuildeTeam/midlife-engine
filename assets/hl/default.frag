@@ -136,7 +136,9 @@ void main() {
     }
 
     // add more color depth by making brighter values than 1 whiter
-    vec3 color_out = desaturate(colorMix.xyz * u_Ambient.xyz + lighting);
+    vec3 color_out = colorMix.xyz * u_Ambient.xyz + lighting;
+    color_out = pow(color_out, vec3(0.4545));
+    color_out = desaturate(color_out);
     //vec3 color_out = colorMix.xyz * u_Ambient.xyz + lighting;
 
     gColor = vec4(color_out, colorMix.a);

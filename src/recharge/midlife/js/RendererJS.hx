@@ -125,6 +125,8 @@ class RendererJS extends RendererAbstract {
   }
 
   override public function preRender(scene:Scene):Void {
+    var canvas:Dynamic = cast Browser.document.getElementById("midlife-canvas");
+    GL.viewport(0, 0, Std.int(canvas.width), Std.int(canvas.height));
     GL.enable(GL2.DEPTH_TEST);
     GL.clear(GL2.COLOR_BUFFER_BIT | GL2.DEPTH_BUFFER_BIT);
   }

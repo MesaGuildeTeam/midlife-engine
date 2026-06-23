@@ -1,5 +1,6 @@
 package recharge.midlife.js;
 
+import js.Browser;
 import js.html.webgl.GL2;
 import js.html.webgl.Program;
 
@@ -60,6 +61,7 @@ class RendererDeferredJS extends RendererJS {
     GL.drawBuffers(buffersArray);
 
     GL.clearColor(_currentBG.x, _currentBG.y, _currentBG.z, 1);
+    GL.clearColor(Math.pow(_currentBG.x, 0.4545), Math.pow(_currentBG.y, 0.4545), Math.pow(_currentBG.z, 0.4545), 1);
     GL.clear(GL2.COLOR_BUFFER_BIT | GL2.DEPTH_BUFFER_BIT);
   }
 
@@ -67,10 +69,11 @@ class RendererDeferredJS extends RendererJS {
     final GL = RendererJS.GL;
     // Unbind framebuffer
     _buffer.unbind();
-    GL.viewport(0, 0, 320, 240);
+
+    var canvas:Dynamic = cast Browser.document.getElementById("midlife-canvas");
+    GL.viewport(0, 0, Std.int(canvas.width), Std.int(canvas.height));
     GL.clearColor(_currentBG.x, _currentBG.y, _currentBG.z, 1);
-    GL.clear(GL2.COLOR_BUFFER_BIT);
-    GL.clear(GL2.DEPTH_BUFFER_BIT);
+    GL.clear(GL2.COLOR_BUFFER_BIT | GL2.DEPTH_BUFFER_BIT);
 
     // use buffer shader
     var currentShader:Program = cast _bufferShader.getShaderProgramJS();

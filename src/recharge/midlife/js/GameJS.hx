@@ -38,7 +38,11 @@ class GameJS extends GameAbstract {
   }
 
   public override function run():Void {
+    #if midlife_deferred
     _renderer = new RendererDeferredJS();
+    #else
+    _renderer = new RendererJS();
+    #end
 
     // Populate InputManager
     InputManager.getInstance().setInput("DPadX", new Input(() -> {
@@ -96,6 +100,32 @@ class GameJS extends GameAbstract {
       }
     });
 
+    Browser.window.addEventListener("resize", function(event:Dynamic) {
+      resizeCanvas();
+    });
+
+    resizeCanvas();
+
     js.Browser.window.setTimeout(gameLoop, 10);
+  }
+
+  function resizeCanvas() {
+    var canvas:Dynamic = cast Browser.document.getElementById("midlife-canvas");
+    dimensions = vec2(Browser.window.innerWidth, Browser.window.innerHeight);
+    canvas.width = Browser.window.innerWidth;
+    canvas.height = Browser.window.innerHeight;
+
+    #if midlife_deferred
+      if (Std.isOfType(_renderer, RendererDeferredJS)) {
+
+        #if midlife_canvas_scaling
+        while (dimensions.x >= 640 || dimensions.y >= 480) {
+          dimensions = dimensions * 0.5;
+        }
+        #end
+
+        _renderer.getBuffer().resize(cast dimensions.x, cast dimensions.y);
+      }
+    #end
   }
 }
